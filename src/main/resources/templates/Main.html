@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모이소 메인</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/Main.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header" onclick="toggleSidebar()">
+        <i class="fa-solid fa-xmark"></i>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="https://www.daegu.ac.kr" target="_blank" rel="noopener noreferrer" class="menu-item">
+                <div class="menu-item-left">
+                    <i class="fa-solid fa-house"></i>
+                    <span>학교 홈페이지</span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.daegu.ac.kr/article/DG159/list" target="_blank" rel="noopener noreferrer" class="menu-item">
+                <div class="menu-item-left">
+                    <i class="fa-solid fa-school"></i>
+                    <span>학사일정</span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/friends}" class="menu-item">
+                <div class="menu-item-left">
+                    <i class="fa-regular fa-user"></i>
+                    <span>친구목록</span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/chat}" class="menu-item">
+                <div class="menu-item-left">
+                    <i class="fa-regular fa-comment"></i>
+                    <span>채팅목록</span>
+                </div>
+            </a>
+        </li>
+
+        <li>
+            <div class="menu-item" onclick="toggleCategory()">
+                <div class="menu-item-left">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                    <span>카테고리</span>
+                </div>
+                <i class="fa-solid fa-chevron-down arrow-icon" id="categoryArrow"></i>
+            </div>
+
+            <ul class="submenu" id="categorySubmenu">
+                <li><a th:href="@{/questions}">전체 게시판</a></li>
+                <li><a th:href="@{/questions(category='FREE')}">자유게시판</a></li>
+                <li class="has-sub">
+                    <div class="sub-menu-item" onclick="toggleSubCategory(event, 'worrySub')">
+                        <span>고민상담소</span>
+                        <i class="fa-solid fa-chevron-down sub-arrow-icon" id="worrySubArrow"></i>
+                    </div>
+                    <ul class="sub-submenu" id="worrySub">
+                        <li><a th:href="@{/questions(category='WORRY_CAREER')}">진로 / 취업</a></li>
+                        <li><a th:href="@{/questions(category='WORRY_STUDY')}">학업 / 성적</a></li>
+                        <li><a th:href="@{/questions(category='WORRY_RELATION')}">연애 / 인간관계</a></li>
+                    </ul>
+                </li>
+                <li class="has-sub">
+                    <div class="sub-menu-item" onclick="toggleSubCategory(event, 'mentorSub')">
+                        <span>멘토링 게시판</span>
+                        <i class="fa-solid fa-chevron-down sub-arrow-icon" id="mentorSubArrow"></i>
+                    </div>
+                    <ul class="sub-submenu" id="mentorSub">
+                        <li><a th:href="@{/questions(category='MENTOR_FIND')}">멘토 찾기</a></li>
+                        <li><a th:href="@{/questions(category='MENTOR_REVIEW')}">멘토링 후기</a></li>
+                    </ul>
+                </li>
+                <li><a th:href="@{/questions(category='STUDY')}">스터디 모임</a></li>
+                <li><a th:href="@{/questions(category='MARKET')}">중고 장터</a></li>
+            </ul>
+        </li>
+    </ul>
+</aside>
+
+<div class="wrapper">
+    <header class="header">
+        <div class="header-left" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+
+        <div class="header-logo">
+            <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소 로고" class="logo-img"
+                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+            <span>모이소</span>
+        </div>
+
+        <div class="header-icons">
+            <!-- 알림 팝업 영역 -->
+            <div class="notif-container">
+                <div class="icon-link" title="알림" onclick="toggleNotifPopup(event)">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge" id="notifBadge" th:if="${unreadNotifCount > 0}" th:text="${unreadNotifCount}">3</span>
+                </div>
+
+                <!-- 알림 드롭다운 팝업 -->
+                <div class="notif-popup" id="notifPopup" onclick="event.stopPropagation()">
+                    <div class="notif-header">
+                        <span>알림</span>
+                        <form th:action="@{/notifications/read-all}" method="post">
+                            <button type="submit" class="mark-read">모두 읽음</button>
+                        </form>
+                    </div>
+                    <ul class="notif-list">
+                        <li th:each="n : ${recentNotifications}" class="notif-item"
+                            th:classappend="${!n.read} ? ' unread' : ''"
+                            th:onclick="|location.href='@{${n.link}}'|">
+                            <div class="notif-icon"><i th:class="${n.type.icon}"></i></div>
+                            <div class="notif-content">
+                                <div class="notif-text" th:text="${n.content}">알림 내용</div>
+                                <div class="notif-time" th:text="${#temporals.format(n.createdAt, 'MM-dd HH:mm')}">시간</div>
+                            </div>
+                        </li>
+                        <li th:if="${#lists.isEmpty(recentNotifications)}" class="notif-empty">새 알림이 없어요.</li>
+                    </ul>
+                    <div class="notif-footer">
+                        <a th:href="@{/notif}">전체 알림 보기</a>
+                    </div>
+                </div>
+            </div>
+
+            <a th:href="@{/calendars}" class="icon-link" title="달력">
+                <i class="fa-regular fa-calendar"></i>
+            </a>
+            <a th:href="@{/search}" class="icon-link" title="검색">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
+            <a th:href="@{/profile}" class="icon-link" title="프로필">
+                <i class="fa-regular fa-user"></i>
+            </a>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="hero-banner">
+            <div class="hero-text">
+                <h2>오늘의 대학생활 이야기 🔥</h2>
+                <p>익명으로 편하게 고민 나누고 선배들의 멘토링까지!</p>
+            </div>
+        </div>
+
+        <!-- 오늘의 베스트 고민 -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-title">오늘의 베스트 고민</div>
+            </div>
+            <div class="card-grid">
+                <th:block th:each="q : ${bestQuestions}">
+                    <a class="wire-card best-card" th:if="${q != null}"
+                       th:href="@{/questions/{id}(id=${q.idx})}"
+                       th:title="${q.title}" th:text="${q.title}">글 제목</a>
+                    <div class="wire-card best-card best-card--empty" th:unless="${q != null}">-</div>
+                </th:block>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <div class="section-title">이달의 멘토</div>
+            </div>
+            <div class="card-grid">
+                <th:block th:each="u : ${bestMentor}">
+                    <a class="wire-card best-card" th:if="${u != null}"
+                       th:href="@{/users/{id}(id=${u.idx})}"
+                       th:title="${u.name}" th:text="${u.name}">멘토 이름</a>
+                    <div class="wire-card best-card best-card--empty" th:unless="${u != null}">-</div>
+                </th:block>
+            </div>
+        </section>
+
+        <!-- 내가 작성한 게시물 섹션 -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-title">내가 작성한 게시물</div>
+            </div>
+            <div class="post-list" th:if="${!#lists.isEmpty(myPosts)}">
+                <div class="post-item" th:each="p : ${myPosts}"
+                     th:onclick="|goToPost(event, '/questions/${p.idx}')|">
+                    <div class="post-info">
+                        <div class="post-thumb">
+                            <img th:if="${p.thumbnailUrl != null}" th:src="@{${p.thumbnailUrl}}" alt="">
+                            <i th:unless="${p.thumbnailUrl != null}" class="fa-regular fa-paper-plane"></i>
+                        </div>
+                        <div class="post-text">
+                            <span class="post-tag" th:if="${p.category != null}" th:text="${p.category.label}">MY</span>
+                            <div class="title" th:text="${p.title}">ooo 관련 질문</div>
+                            <div class="author" th:text="${#temporals.format(p.createdAt, 'yyyy-MM-dd')} + ' · 답변 ' + ${p.answerCount}">작성일</div>
+                        </div>
+                    </div>
+                    <div class="post-actions">
+                        <div class="action-row">
+                            <span class="action-btn">
+                                <i class="fa-solid fa-heart"></i>
+                                <span th:text="${p.likeCount}">0</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="empty" th:if="${#lists.isEmpty(myPosts)}">
+                <span th:if="${loginUser == null}">로그인하면 내가 쓴 글을 볼 수 있어요.</span>
+                <span th:unless="${loginUser == null}">아직 작성한 글이 없어요. 첫 글을 남겨보세요!</span>
+            </p>
+        </section>
+
+        <!-- 최근 게시물 섹션 -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-title">최근 게시물</div>
+            </div>
+            <div class="post-list" th:if="${!#lists.isEmpty(recentPosts)}">
+                <div class="post-item" th:each="p : ${recentPosts}"
+                     th:onclick="|goToPost(event, '/questions/${p.idx}')|">
+                    <div class="post-info">
+                        <div class="post-thumb">
+                            <img th:if="${p.thumbnailUrl != null}" th:src="@{${p.thumbnailUrl}}" alt="">
+                            <i th:unless="${p.thumbnailUrl != null}" class="fa-regular fa-comments"></i>
+                        </div>
+                        <div class="post-text">
+                            <span class="post-tag" th:if="${p.category != null}" th:text="${p.category.label}">NEW</span>
+                            <div class="title" th:text="${p.title}">ooo 관련 질문</div>
+                            <div class="author" th:text="'작성자: ' + ${p.writerName}">작성자</div>
+                        </div>
+                    </div>
+                    <div class="post-actions">
+                        <div class="action-row">
+                            <span class="action-btn">
+                                <i class="fa-solid fa-heart"></i>
+                                <span th:text="${p.likeCount}">0</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="empty" th:if="${#lists.isEmpty(recentPosts)}">아직 등록된 글이 없어요.</p>
+        </section>
+    </main>
+</div>
+
+<a th:href="@{/write}" class="write-fab" title="글쓰기">
+    <i class="fa-solid fa-pen"></i>
+</a>
+<script th:src="@{/js/Main.js}"></script>
+</body>
+</html>

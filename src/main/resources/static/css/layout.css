@@ -1,0 +1,139 @@
+@charset "UTF-8";
+
+/* =============================================================
+   모이소 · layout.css — 슬라이드 사이드바 공통 컴포넌트
+   Main · Profile · User_Profile 에서 base.css 다음에 로드.
+   (세 페이지가 동일한 마크업/클래스명을 쓰므로 한 곳에서 관리)
+   ============================================================= */
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 20, 16, 0.32);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: var(--z-overlay);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur-3) var(--ease), visibility var(--dur-3) var(--ease);
+}
+.sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(84vw, 288px);
+    height: 100%;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    box-shadow: var(--shadow-3);
+    z-index: var(--z-drawer);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: translateX(-100%);
+    transition: transform var(--dur-3) var(--ease-out);
+}
+.sidebar.active { transform: translateX(0); }
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: var(--sp-5) var(--sp-5) var(--sp-3);
+    color: var(--text-muted);
+    font-size: var(--fs-20);
+    cursor: pointer;
+}
+
+.sidebar-menu { list-style: none; padding: var(--sp-2) var(--sp-3) var(--sp-5); }
+.sidebar-menu > li { margin-bottom: 2px; }
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-md);
+    color: var(--text);
+    font-size: var(--fs-15);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.menu-item:hover { background: var(--brand-wash); color: var(--brand-ink); text-decoration: none; }
+.menu-item-left { display: flex; align-items: center; gap: var(--sp-3); }
+.menu-item-left i { width: 20px; text-align: center; font-size: var(--fs-16); }
+
+.submenu {
+    list-style: none;
+    margin: 2px var(--sp-2);
+    background: var(--surface-2);
+    border-radius: var(--r-md);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--dur-3) var(--ease-out);
+}
+.submenu.open { max-height: 60rem; padding: var(--sp-2) 0; }
+.submenu li a {
+    display: block;
+    padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-10);
+    border-radius: var(--r-sm);
+    color: var(--text-muted);
+    font-size: var(--fs-14);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--dur-2) var(--ease);
+}
+.submenu li a:hover { color: var(--brand-ink); text-decoration: none; }
+
+.arrow-icon,
+.sub-arrow-icon {
+    font-size: var(--fs-12);
+    color: var(--text-subtle);
+    transition: transform var(--dur-2) var(--ease);
+}
+.sub-arrow-icon { font-size: var(--fs-11); }
+.arrow-icon.rotate,
+.sub-arrow-icon.rotate { transform: rotate(180deg); }
+
+.sub-menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-10);
+    color: var(--text-muted);
+    font-size: var(--fs-14);
+    font-weight: 500;
+    cursor: pointer;
+    transition: color var(--dur-2) var(--ease);
+}
+.sub-menu-item:hover { color: var(--brand-ink); }
+
+.sub-submenu {
+    list-style: none;
+    margin: 2px var(--sp-3) 2px 2.75rem;
+    background: var(--surface-sunk);
+    border-radius: var(--r-sm);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--dur-3) var(--ease-out);
+}
+.sub-submenu.open { max-height: 20rem; padding: var(--sp-1) 0; }
+.sub-submenu li a {
+    display: block;
+    padding: var(--sp-2) var(--sp-4);
+    color: var(--text-muted);
+    font-size: var(--fs-13);
+    text-decoration: none;
+}
+.sub-submenu li a:hover { color: var(--brand-ink); text-decoration: none; }
+
+.section-divider {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--sp-8) 0;
+}

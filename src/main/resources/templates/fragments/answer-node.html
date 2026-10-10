@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- 답변 1개 + 그 아래 대댓글을 재귀적으로 렌더링하는 조각. 깊이 제한 없음. -->
+<div th:fragment="answerNode(a, questionIdx, isReply, loginUserIdx, questionWriterIdx)"
+     class="answer" th:classappend="${isReply} ? ' reply' : ''">
+    <div class="head">
+        <a class="name" th:href="@{/users/{id}(id=${a.writerIdx})}" th:text="${a.writerName}">답변자</a>
+        <span class="date" th:text="${#temporals.format(a.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+    </div>
+    <div class="text" th:text="${a.content}">답변 내용</div>
+    <div class="answer-actions">
+        <form th:action="@{/answers/{id}/like(id=${a.idx})}" method="post">
+            <input type="hidden" name="questionIdx" th:value="${questionIdx}">
+            <button type="submit" class="like-btn" th:classappend="${a.likedByMe} ? ' liked' : ''">
+                <i class="fa-solid fa-heart" th:if="${a.likedByMe}"></i>
+                <i class="fa-regular fa-heart" th:unless="${a.likedByMe}"></i>
+                <span th:text="${a.likeCount}">0</span>
+            </button>
+        </form>
+        <button type="button" class="reply-toggle"
+                th:attr="data-target=|reply-form-${a.idx}|" onclick="toggleForm(this)">
+            답글
+        </button>
+        <!-- 본인이 작성한 답변에만 수정/삭제 노출 -->
+        <th:block th:if="${loginUserIdx != null and loginUserIdx == a.writerIdx}">
+            <button type="button" class="reply-toggle"
+                    th:attr="data-target=|edit-form-${a.idx}|" onclick="toggleForm(this)">
+                수정
+            </button>
+            <form th:action="@{/answers/{id}/delete(id=${a.idx})}" method="post"
+                  onsubmit="return confirm('이 답변을 삭제할까요?');">
+                <input type="hidden" name="questionIdx" th:value="${questionIdx}">
+                <button type="submit" class="reply-toggle danger-link">삭제</button>
+            </form>
+        </th:block>
+        <!-- 질문 작성자 본인만, 자기 답변이 아닐 때, 아직 리뷰를 안 남겼을 때만 노출 -->
+        <button type="button" class="reply-toggle review-toggle"
+                th:if="${loginUserIdx != null and loginUserIdx == questionWriterIdx and loginUserIdx != a.writerIdx and !a.reviewedByMe}"
+                th:attr="data-target=|review-form-${a.idx}|" onclick="toggleForm(this)">
+            리뷰 남기기
+        </button>
+        <span class="reviewed-note"
+              th:if="${loginUserIdx != null and loginUserIdx == questionWriterIdx and loginUserIdx != a.writerIdx and a.reviewedByMe}">
+            이미 리뷰를 남겼어요
+        </span>
+    </div>
+
+    <!-- 이 답변에 대한 리뷰(별점) 작성 폼 (기본 숨김) -->
+    <form class="answer-form review-form toggle-form"
+          th:if="${loginUserIdx != null and loginUserIdx == questionWriterIdx and loginUserIdx != a.writerIdx and !a.reviewedByMe}"
+          th:id="|review-form-${a.idx}|" hidden
+          th:action="@{/reviews}" method="post">
+        <input type="hidden" name="mentorIdx" th:value="${a.writerIdx}">
+        <input type="hidden" name="answerIdx" th:value="${a.idx}">
+        <input type="hidden" name="questionIdx" th:value="${questionIdx}">
+        <label>
+            별점
+            <select name="rating" required>
+                <option value="">선택</option>
+                <option th:each="v : ${#numbers.sequence(10, 0, -1)}"
+                        th:value="${v / 2.0}" th:text="${v / 2.0} + '점'">5.0점</option>
+            </select>
+        </label>
+        <textarea name="content" placeholder="이 답변은 어떠셨나요? (선택)" maxlength="1000"></textarea>
+        <button type="submit">리뷰 등록</button>
+    </form>
+
+    <!-- 이 답변에 대한 답글 작성 폼 (기본 숨김) -->
+    <form class="answer-form reply-form toggle-form" th:id="|reply-form-${a.idx}|" hidden
+          th:action="@{/questions/{id}/answers(id=${questionIdx})}" method="post">
+        <input type="hidden" name="parentAnswerIdx" th:value="${a.idx}">
+        <textarea name="content" placeholder="답글을 남겨주세요" required></textarea>
+        <button type="submit">등록</button>
+    </form>
+
+    <!-- 본인 답변 수정 폼 (기본 숨김) -->
+    <form class="answer-form edit-form toggle-form" th:if="${loginUserIdx != null and loginUserIdx == a.writerIdx}"
+          th:id="|edit-form-${a.idx}|" hidden
+          th:action="@{/answers/{id}(id=${a.idx})}" method="post">
+        <input type="hidden" name="questionIdx" th:value="${questionIdx}">
+        <textarea name="content" required th:text="${a.content}"></textarea>
+        <button type="submit">수정 완료</button>
+    </form>
+
+    <!-- 대댓글(들) - 각 대댓글도 같은 조각을 재귀 호출해 그 아래 대대댓글까지 표시 -->
+    <div th:each="child : ${a.replies}">
+        <div th:replace="~{fragments/answer-node :: answerNode(${child}, ${questionIdx}, true, ${loginUserIdx}, ${questionWriterIdx})}"></div>
+    </div>
+</div>
+
+</body>
+</html>

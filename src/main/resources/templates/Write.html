@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글쓰기</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Write.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<!-- 헤더 영역 -->
+<header class="header">
+    <button type="button" class="back-btn" onclick="goBack()" title="뒤로가기">
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <!-- 중앙 모이소 로고 -->
+    <a th:href="@{/main}" class="header-logo-group">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소 로고" class="header-logo-img"
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+        <span class="header-title">모이소</span>
+    </a>
+
+    <button type="submit" form="postForm" class="submit-header-btn"
+            th:text="${questionIdx != null} ? '수정 완료' : '등록'">등록</button>
+</header>
+
+<!-- 메인 입력 컨테이너 -->
+<main class="container">
+
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"
+         style="margin-bottom: 16px;"></div>
+
+    <!-- 수정/신규 여부에 따라 action 분기 -->
+    <form id="postForm" class="card" method="post" enctype="multipart/form-data"
+          th:action="${questionIdx != null} ? @{/questions/{id}(id=${questionIdx})} : @{/questions}">
+
+        <!-- 글 제목(2/3) + 게시판 선택(1/3) 한 줄 배치 -->
+        <div class="title-category-row">
+            <input type="text" name="title" class="input-title" placeholder="글 제목을 입력하세요" required
+                   th:value="${questionForm != null} ? ${questionForm.title} : ''">
+
+            <div class="category-select-wrapper">
+                <select id="categorySelect" name="category" class="category-select" required>
+                    <option value="" disabled
+                            th:selected="${questionForm == null or questionForm.category == null}">게시판 선택</option>
+                    <option value="TODAY" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'TODAY'}">오늘의 대학생활</option>
+                    <option value="FREE" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'FREE'}">자유게시판</option>
+                    <option value="WORRY_CAREER" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'WORRY_CAREER'}">고민상담소 - 진로/취업</option>
+                    <option value="WORRY_STUDY" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'WORRY_STUDY'}">고민상담소 - 학업/성적</option>
+                    <option value="WORRY_RELATION" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'WORRY_RELATION'}">고민상담소 - 연애/인간관계</option>
+                    <option value="MENTOR_FIND" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'MENTOR_FIND'}">멘토링 게시판 - 멘토 찾기</option>
+                    <option value="MENTOR_REVIEW" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'MENTOR_REVIEW'}">멘토링 게시판 - 멘토링 후기</option>
+                    <option value="STUDY" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'STUDY'}">스터디 모임</option>
+                    <option value="MARKET" th:selected="${questionForm != null and questionForm.category != null and questionForm.category.name() == 'MARKET'}">중고 장터</option>
+                </select>
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+        </div>
+
+        <!-- 글 내용 작성 -->
+        <textarea name="content" class="input-content" required
+                  placeholder="내용을 작성해주세요.&#10;&#10;- 대학 생활 이야기, 고민, 궁금한 점을 자유롭게 남겨보세요.&#10;- 타인을 비방하거나 부적절한 내용은 제재될 수 있습니다."
+                  th:text="${questionForm != null} ? ${questionForm.content} : ''"></textarea>
+
+        <!-- 기존 첨부 사진 (수정 화면에서만) - 새로 올리는 사진은 이 뒤에 이어붙는다 -->
+        <div class="existing-images" th:if="${existingImages != null and !#lists.isEmpty(existingImages)}">
+            <p class="existing-images-hint">기존 첨부 사진 (새 사진은 뒤에 추가됩니다)</p>
+            <div class="preview-list">
+                <div class="preview-item" th:each="url : ${existingImages}">
+                    <img th:src="@{${url}}" alt="첨부 사진">
+                </div>
+            </div>
+        </div>
+
+        <!-- 사진 첨부 영역 -->
+        <div class="upload-section">
+            <input type="file" id="fileInput" name="images" accept="image/*" multiple style="display: none;" onchange="handleImageUpload(event)">
+
+            <div class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                <i class="fa-regular fa-image"></i>
+                <span><b id="imgCount">0</b>/5</span>
+            </div>
+
+            <div class="preview-list" id="previewList"></div>
+        </div>
+
+        <!-- 익명 선택 옵션 -->
+        <div class="option-row">
+            <span>익명으로 게시하기</span>
+            <label class="checkbox-label">
+                <input type="checkbox" id="anonymousCheck" checked>
+                <span>익명</span>
+            </label>
+        </div>
+
+    </form>
+</main>
+<script th:src="@{/js/Write.js}"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+@charset "UTF-8";
+
+/* 회원가입 화면 */
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    padding: var(--sp-6);
+}
+
+.signup-container {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    margin: auto;
+    padding: var(--sp-10) var(--sp-8) var(--sp-8);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-2);
+}
+
+/* 좌측 상단 뒤로가기 */
+.top-back-btn {
+    position: absolute;
+    top: var(--sp-4);
+    left: var(--sp-4);
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--r-full);
+    color: var(--text-muted);
+    font-size: var(--fs-18);
+    transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.top-back-btn:hover {
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    text-decoration: none;
+}
+
+.logo-area { text-align: center; margin-bottom: var(--sp-3); }
+.logo-area img {
+    width: 84px;
+    height: 84px;
+    margin-inline: auto;
+    border-radius: var(--r-full);
+    object-fit: cover;
+    background: var(--brand-wash);
+}
+
+.title {
+    text-align: center;
+    margin-bottom: var(--sp-8);
+    font-size: var(--fs-24);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.signup-form { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.form-row {
+    display: grid;
+    grid-template-columns: 24px 76px 1fr;
+    align-items: center;
+    gap: var(--sp-3);
+}
+
+.icon-box {
+    font-size: var(--fs-16);
+    color: var(--text-subtle);
+    text-align: center;
+}
+
+.label-box {
+    padding: var(--sp-2) 0;
+    border-radius: var(--r-sm);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    text-align: center;
+}
+
+.input-box,
+.select-box {
+    width: 100%;
+    min-height: 46px;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    font-size: var(--fs-15);
+    transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.input-box:hover,
+.select-box:hover { border-color: var(--gray-400); }
+.input-box:focus,
+.select-box:focus { outline: none; border-color: var(--brand); box-shadow: var(--ring); }
+
+.select-box { cursor: pointer; }
+
+.btn-submit {
+    width: 100%;
+    min-height: 48px;
+    margin-top: var(--sp-3);
+    border: 0;
+    border-radius: var(--r-md);
+    background: var(--brand);
+    color: var(--text-on-brand);
+    font-size: var(--fs-15);
+    font-weight: 700;
+    box-shadow: var(--shadow-brand);
+    transition: background var(--dur-2) var(--ease), transform var(--dur-1) var(--ease);
+}
+.btn-submit:hover { background: var(--brand-strong); }
+.btn-submit:active { transform: translateY(1px); }
+
+@media (max-width: 480px) {
+    .signup-container { padding: var(--sp-8) var(--sp-5) var(--sp-6); border-radius: var(--r-lg); }
+
+    /* 좁은 화면에서는 아이콘·라벨을 위로 쌓는다 */
+    .form-row {
+        grid-template-columns: 24px 1fr;
+        grid-template-areas:
+            "icon  label"
+            "field field";
+        row-gap: var(--sp-2);
+    }
+    .icon-box  { grid-area: icon; }
+    .label-box { grid-area: label; justify-self: start; padding-inline: var(--sp-3); }
+    .input-box,
+    .select-box { grid-area: field; }
+}

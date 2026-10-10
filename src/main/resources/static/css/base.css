@@ -1,0 +1,323 @@
+@charset "UTF-8";
+
+/* 모이소 공유 디자인 시스템 — 페이지별 CSS보다 먼저 로드 */
+
+/* ---- 1. 디자인 토큰 --------------------------------------- */
+:root {
+    color-scheme: light;
+
+    /* 브랜드 컬러 */
+    --brand:        #ff5722;
+    --brand-strong: #e8460f;              /* hover/pressed */
+    --brand-ink:    #c43d10;              /* 텍스트·링크용 */
+    --brand-wash:   #fff3ee;              /* 옅은 틴트 */
+    --brand-wash-2: #ffe1d3;              /* 진한 틴트 */
+    --brand-ring:   rgba(255, 87, 34, 0.32);
+
+    /* 웜 그레이 램프 */
+    --gray-50:  #faf8f6;
+    --gray-100: #f3f0ed;
+    --gray-200: #e7e3df;
+    --gray-300: #d7d2cc;
+    --gray-400: #b0a9a2;
+    --gray-500: #837b73;
+    --gray-600: #5c554e;
+    --gray-700: #403a35;
+    --gray-800: #29241f;
+    --gray-900: #181410;
+
+    /* 시맨틱 표면/텍스트 */
+    --bg:            #faf7f5;
+    --surface:       #ffffff;
+    --surface-2:     #f5f2ef;
+    --surface-sunk:  #efeae6;
+    --border:        #e7e3df;
+    --border-strong: #d7d2cc;
+
+    --text:          #29241f;
+    --text-muted:    #5c554e;
+    --text-subtle:   #837b73;
+    --text-on-brand: #ffffff;
+
+    /* 상태색 (포인트 컬러와 별개) */
+    --ok:          #1b8a5a;
+    --warn:        #b26a00;
+    --danger:      #d23b2e;
+    --danger-wash: #fdecea;
+
+    /* 라운드 */
+    --r-xs: 6px;
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-xl: 28px;
+    --r-full: 999px;
+
+    /* 간격 스케일 (4pt) */
+    --sp-1: 4px;   --sp-2: 8px;   --sp-3: 12px;  --sp-4: 16px;
+    --sp-5: 20px;  --sp-6: 24px;  --sp-8: 32px;  --sp-10: 40px;  --sp-12: 48px;
+
+    /* 그림자 */
+    --shadow-1: 0 1px 2px rgba(41, 36, 31, 0.06), 0 1px 3px rgba(41, 36, 31, 0.05);
+    --shadow-2: 0 4px 12px rgba(41, 36, 31, 0.08), 0 2px 4px rgba(41, 36, 31, 0.04);
+    --shadow-3: 0 12px 32px rgba(41, 36, 31, 0.14), 0 4px 10px rgba(41, 36, 31, 0.08);
+    --shadow-brand: 0 6px 18px rgba(255, 87, 34, 0.28);
+
+    /* 타이포 */
+    --font-sans: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont,
+                 "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", "Segoe UI", Roboto, sans-serif;
+    --fs-11: 0.6875rem; --fs-12: 0.75rem;   --fs-13: 0.8125rem; --fs-14: 0.875rem;
+    --fs-15: 0.9375rem; --fs-16: 1rem;      --fs-18: 1.125rem;  --fs-20: 1.25rem;
+    --fs-24: 1.5rem;    --fs-30: 1.875rem;  --fs-38: 2.375rem;
+    --lh-tight: 1.25;   --lh-snug: 1.4;     --lh-normal: 1.6;
+
+    /* 모션 */
+    --dur-1: 120ms; --dur-2: 200ms; --dur-3: 320ms;
+    --ease:     cubic-bezier(0.2, 0, 0, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* 포커스 링 */
+    --ring: 0 0 0 3px var(--brand-ring);
+
+    /* z-index 스케일 */
+    --z-header: 100;
+    --z-fab: 200;
+    --z-popover: 1100;
+    --z-overlay: 1500;
+    --z-drawer: 2000;
+    --z-modal: 3000;
+    --z-toast: 4000;
+
+    /* ---- 하위호환 별칭 -------------------------------------- */
+    --primary:          var(--brand);
+    --primary-hover:    var(--brand-strong);
+    --primary-light:    var(--brand-wash);
+    --primary-gradient: linear-gradient(135deg, #ff7e36 0%, var(--brand) 100%);
+    --point-orange:       var(--brand);
+    --point-orange-hover: var(--brand-strong);
+
+    --bg-color:  var(--bg);
+    --bg-body:   var(--bg);
+    --card-bg:   var(--surface);
+    --sidebar-bg: var(--surface);
+    --text-main: var(--text);
+    --text-sub:  var(--text-muted);
+    --icon-color: var(--text-muted);
+    --border-color: var(--border);
+
+    --radius-s: var(--r-sm);
+    --radius-m: var(--r-md);
+    --radius-full: var(--r-full);
+    --shadow-sm:    var(--shadow-1);
+    --shadow-card:  var(--shadow-1);
+    --shadow-hover: var(--shadow-2);
+}
+
+/* OS 다크 모드 */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+
+        --brand:        #ff6a3d;
+        --brand-strong: #ff824f;
+        --brand-ink:    #ff9166;
+        --brand-wash:   #2a1a12;
+        --brand-wash-2: #3a2416;
+        --brand-ring:   rgba(255, 106, 61, 0.38);
+
+        --bg:            #17130f;
+        --surface:       #201b17;
+        --surface-2:     #2a2420;
+        --surface-sunk:  #14100d;
+        --border:        #352e28;
+        --border-strong: #4a4139;
+
+        --text:          #f2ede9;
+        --text-muted:    #c3bab1;
+        --text-subtle:   #948b82;
+        --text-on-brand: #1a1209;
+
+        --ok:          #43c98a;
+        --warn:        #e0a83c;
+        --danger:      #f0665a;
+        --danger-wash: #35201d;
+
+        --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.40);
+        --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.45);
+        --shadow-3: 0 14px 36px rgba(0, 0, 0, 0.55);
+        --shadow-brand: 0 6px 20px rgba(255, 106, 61, 0.32);
+    }
+}
+
+/* 다크 모드 수동 토글 */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --brand: #ff6a3d; --brand-strong: #ff824f; --brand-ink: #ff9166;
+    --brand-wash: #2a1a12; --brand-wash-2: #3a2416; --brand-ring: rgba(255, 106, 61, 0.38);
+    --bg: #17130f; --surface: #201b17; --surface-2: #2a2420; --surface-sunk: #14100d;
+    --border: #352e28; --border-strong: #4a4139;
+    --text: #f2ede9; --text-muted: #c3bab1; --text-subtle: #948b82; --text-on-brand: #1a1209;
+    --ok: #43c98a; --warn: #e0a83c; --danger: #f0665a; --danger-wash: #35201d;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.40);
+    --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.45);
+    --shadow-3: 0 14px 36px rgba(0, 0, 0, 0.55);
+    --shadow-brand: 0 6px 20px rgba(255, 106, 61, 0.32);
+}
+
+/* ---- 2. 리셋 ---------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100svh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--fs-14);
+    font-weight: 400;
+    line-height: var(--lh-normal);
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+}
+
+img, svg, video, canvas { display: block; max-width: 100%; }
+img { height: auto; }
+
+input, button, textarea, select { font: inherit; color: inherit; letter-spacing: inherit; }
+button { background: none; border: 0; cursor: pointer; }
+textarea { resize: vertical; }
+
+a { color: var(--brand-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4 {
+    line-height: var(--lh-tight);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--text);
+}
+
+::placeholder { color: var(--text-subtle); opacity: 1; }
+::selection { background: var(--brand-wash-2); color: var(--text); }
+
+/* 스크롤바 */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border: 3px solid transparent;
+    border-radius: var(--r-full);
+    background-clip: content-box;
+}
+
+/* ---- 3. 접근성 ------------------------------------------- */
+:where(a, button, input, select, textarea, [tabindex], [role="button"]):focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
+    border-radius: var(--r-xs);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ---- 4. 공통 프리미티브 ------- */
+
+/* 본문 폭 컨테이너 */
+.u-container {
+    width: 100%;
+    max-width: 900px;
+    margin-inline: auto;
+    padding-inline: var(--sp-5);
+}
+
+/* 버튼 */
+.btn {
+    --_bg: var(--surface);
+    --_fg: var(--text);
+    --_bd: var(--border-strong);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    min-height: 44px;
+    padding: 0 var(--sp-5);
+    border: 1px solid var(--_bd);
+    border-radius: var(--r-md);
+    background: var(--_bg);
+    color: var(--_fg);
+    font-size: var(--fs-15);
+    font-weight: 700;
+    transition: background var(--dur-2) var(--ease),
+                border-color var(--dur-2) var(--ease),
+                box-shadow var(--dur-2) var(--ease),
+                transform var(--dur-1) var(--ease);
+}
+.btn:hover { text-decoration: none; }
+.btn:active { transform: translateY(1px); }
+.btn--brand { --_bg: var(--brand); --_fg: var(--text-on-brand); --_bd: transparent; box-shadow: var(--shadow-brand); }
+.btn--brand:hover { --_bg: var(--brand-strong); }
+.btn--ghost:hover { --_bg: var(--surface-2); }
+.btn--block { width: 100%; }
+
+/* 입력 필드 */
+.field {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    font-size: var(--fs-15);
+    transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.field:hover { border-color: var(--gray-400); }
+.field:focus { outline: none; border-color: var(--brand); box-shadow: var(--ring); }
+.field:disabled { background: var(--surface-2); color: var(--text-subtle); cursor: not-allowed; }
+
+/* 카드 */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+}
+
+/* 폼 검증 메시지 / 플래시 배너 */
+.form-error { margin-top: var(--sp-1); color: var(--danger); font-size: var(--fs-13); font-weight: 600; }
+.flash {
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--r-md);
+    font-size: var(--fs-14);
+    font-weight: 600;
+}
+.flash--error { background: var(--danger-wash); color: var(--danger); }
+.flash--info  { background: var(--brand-wash);  color: var(--brand-ink); }
+
+/* 스크린리더 전용 */
+.visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}

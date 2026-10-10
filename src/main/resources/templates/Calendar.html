@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Calendar.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Calender</title>
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<header class="header">
+    <h1 class="header__title">Calendar</h1>
+    <div class="header-back">
+        <a th:href="@{/main}" class="back-btn" title="뒤로가기">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <a th:href="@{/main}" class="header-logo">
+        <img th:src="@{/images/cow.png}" src="images/cow.png" class="logo-cow" alt="모이소 로고" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+
+    <div class="header-icons">
+        <button type="button" class="icon-btn" id="notifBtn" title="알림">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notif-badge" th:if="${unreadNotifCount > 0}"></span>
+        </button>
+        <a th:href="@{/profile}" class="icon-link" title="마이페이지">
+            <i class="fa-regular fa-user"></i>
+        </a>
+
+        <!-- 알림 드롭다운 팝업 창 -->
+        <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">
+                <span>알림</span>
+                <form th:action="@{/notifications/read-all}" method="post">
+                    <button type="submit" class="mark-read">모두 읽음</button>
+                </form>
+            </div>
+            <div class="notif-list">
+                <a th:each="n : ${recentNotifications}" th:href="@{${n.link}}" class="notif-item"
+                   th:classappend="${!n.read} ? ' unread' : ''">
+                    <div class="notif-icon"><i th:class="${n.type.icon}"></i></div>
+                    <div class="notif-content">
+                        <div class="notif-text" th:text="${n.content}">알림 내용</div>
+                        <div class="notif-time" th:text="${#temporals.format(n.createdAt, 'MM-dd HH:mm')}">시간</div>
+                    </div>
+                </a>
+                <p th:if="${#lists.isEmpty(recentNotifications)}" class="notif-empty">새 알림이 없어요.</p>
+            </div>
+            <div class="notif-footer">
+                <a th:href="@{/notif}">전체 알림 보기</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div th:if="${message}" class="flash flash--info" th:text="${message}"></div>
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"></div>
+
+    <section class="cal-card">
+        <div class="cal-header">
+            <button type="button" class="cal-nav" id="calPrev" aria-label="이전 달">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="cal-title" id="calTitle">2026년 9월</div>
+            <button type="button" class="cal-nav" id="calNext" aria-label="다음 달">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <div class="cal-weekdays">
+                <span class="sun">일</span><span>월</span><span>화</span><span>수</span>
+                <span>목</span><span>금</span><span class="sat">토</span>
+            </div>
+
+            <div class="cal-grid" id="calGrid"></div>
+        </div>
+    </section>
+
+    <section class="cal-events">
+        <div class="cal-events-head">
+            <div class="section-label" id="calSelectedLabel">일정</div>
+            <button type="button" class="btn btn--ghost btn--sm" id="addEventBtn">
+                <i class="fa-solid fa-plus"></i> 일정 추가
+            </button>
+        </div>
+
+        <form class="add-event-form" id="addEventForm" th:action="@{/calendars/events}" method="post" hidden>
+            <input type="hidden" name="date" id="addEventDate">
+            <input type="time" name="time" class="field">
+            <input type="text" name="title" class="field" placeholder="일정 제목 (예: 팀플 회의)" maxlength="100" required>
+            <button type="submit" class="btn btn--brand btn--sm">추가</button>
+        </form>
+
+        <p class="empty" id="calEmpty">선택한 날짜에 일정이 없습니다.</p>
+        <div class="cal-event-list" id="calEventList"></div>
+    </section>
+
+    <section class="sync-card" th:if="${calendarToken}">
+        <div class="sync-header">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <div>
+                <div class="sync-title">휴대폰 캘린더에서 확인하기</div>
+                <p class="sync-desc">한 번만 등록하면 새로 생긴 예약이 휴대폰에 자동 반영됩니다.</p>
+            </div>
+        </div>
+
+        <div class="sync-actions">
+            <a th:href="'webcal://' + ${#strings.replace(feedUrl, 'http://', '')}"
+               th:if="${feedUrl != null and #strings.startsWith(feedUrl, 'http://')}"
+               class="btn btn--brand">
+                <i class="fa-solid fa-calendar-plus"></i>
+                지금 연동하기
+            </a>
+
+            <button type="button" class="btn btn--ghost" id="copyFeedBtn" th:attr="data-feed-url=${feedUrl}">
+                <i class="fa-regular fa-copy"></i>
+                링크 복사
+            </button>
+        </div>
+
+        <p class="sync-copied" id="copyFeedMsg" hidden>링크를 복사했습니다.</p>
+    </section>
+
+</main>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    window.CALENDAR_EVENTS = /*[[${events}]]*/ {};
+    /*]]>*/
+</script>
+<script th:src="@{/js/Calendar.js}"></script>
+</body>
+</html>

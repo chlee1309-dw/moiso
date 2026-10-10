@@ -1,0 +1,109 @@
+@charset "UTF-8";
+
+/* 친구 목록 / 받은 요청 */
+
+body { display: flex; flex-direction: column; }
+
+/* ---- 헤더 --------------------------------------------- */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 var(--sp-4);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+.header .back-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-full);
+    color: var(--text);
+    font-size: var(--fs-18);
+    text-decoration: none;
+    transition: background var(--dur-2) var(--ease);
+}
+.header .back-btn:hover { background: var(--surface-2); }
+.header-logo-group { display: flex; align-items: center; gap: var(--sp-2); color: var(--text); text-decoration: none; }
+.header-logo-group img { width: 30px; height: 30px; border-radius: var(--r-full); object-fit: cover; }
+.header-logo-group span { font-size: var(--fs-18); font-weight: 800; }
+
+/* ---- 컨테이너 ---------------------------------------- */
+.container {
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
+    padding: var(--sp-6) var(--sp-5) var(--sp-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+}
+.page-heading { font-size: var(--fs-24); font-weight: 800; letter-spacing: -0.02em; }
+.section-label {
+    margin-top: var(--sp-4);
+    font-size: var(--fs-15);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+}
+.section-label::before {
+    content: "";
+    width: 5px;
+    height: 16px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+}
+.empty {
+    padding: var(--sp-8) var(--sp-5);
+    text-align: center;
+    color: var(--text-subtle);
+    font-size: var(--fs-14);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+}
+
+/* ---- 친구 카드 -------------------------------------- */
+.friend-list { display: flex; flex-direction: column; gap: var(--sp-3); }
+.friend-card {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-1);
+}
+.friend-name { font-size: var(--fs-15); font-weight: 700; color: var(--text); text-decoration: none; }
+.friend-name:hover { color: var(--brand-ink); text-decoration: none; }
+.friend-meta { font-size: var(--fs-12); color: var(--text-subtle); }
+
+.friend-actions { margin-left: auto; display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.friend-actions button {
+    min-height: 36px;
+    padding: 0 var(--sp-4);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: var(--fs-13);
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease), background var(--dur-2) var(--ease);
+}
+.friend-actions button:hover { border-color: var(--brand); color: var(--brand-ink); }
+.friend-actions button.accept { border-color: transparent; background: var(--brand); color: var(--text-on-brand); }
+.friend-actions button.accept:hover { background: var(--brand-strong); }
+.friend-actions button.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+@media (max-width: 500px) {
+    .friend-card { flex-wrap: wrap; }
+    .friend-actions { margin-left: 0; width: 100%; }
+}

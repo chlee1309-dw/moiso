@@ -1,0 +1,110 @@
+@charset "UTF-8";
+
+/* 랜딩 화면 (좌: 브랜드 소개, 우: 로그인/가입) */
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100svh;
+    padding: var(--sp-6);
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    max-width: 960px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-2);
+    overflow: hidden;
+}
+
+/* ---- 좌: 브랜드 소개 --------------------------------- */
+.brand-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-3);
+    padding: var(--sp-12) var(--sp-10);
+    text-align: center;
+    background: linear-gradient(160deg, var(--brand-wash) 0%, var(--brand-wash-2) 100%);
+    border-right: 1px solid var(--border);
+}
+.logo-circle {
+    width: 148px;
+    height: 148px;
+    margin-bottom: var(--sp-2);
+    border-radius: var(--r-full);
+    overflow: hidden;
+}
+.main-cow { width: 100%; height: 100%; object-fit: cover; }
+.logo-text { font-size: var(--fs-38); font-weight: 800; letter-spacing: -0.03em; }
+.slogan-title { font-size: var(--fs-20); font-weight: 700; line-height: var(--lh-snug); word-break: keep-all; }
+.slogan-sub { font-size: var(--fs-14); color: var(--text-muted); line-height: var(--lh-snug); word-break: keep-all; }
+
+/* ---- 우: 로그인 / 가입 ------------------------------ */
+.action-section {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--sp-12) var(--sp-10);
+}
+.action-title { margin-bottom: var(--sp-6); font-size: var(--fs-20); font-weight: 700; text-align: center; }
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    width: 100%;
+    min-height: 48px;
+    margin-bottom: var(--sp-2);
+    padding: 0 var(--sp-4);
+    border: 1px solid transparent;
+    border-radius: var(--r-md);
+    font-size: var(--fs-15);
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease);
+}
+.btn:hover { text-decoration: none; }
+
+.login-btn { background: var(--brand); color: var(--text-on-brand); box-shadow: var(--shadow-brand); }
+.login-btn:hover { background: var(--brand-strong); }
+
+.white-btn { background: var(--surface); color: var(--text); border-color: var(--border-strong); }
+.white-btn:hover { background: var(--surface-2); }
+
+.sns-title {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin: var(--sp-5) 0;
+    color: var(--text-subtle);
+    font-size: var(--fs-12);
+}
+.sns-title::before,
+.sns-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+/* 소셜 로그인 (브랜드 색 유지) */
+.btn-naver { background: #03c75a; color: #fff; }
+.btn-kakao { background: #fee500; color: #191600; }
+.btn-google { background: var(--surface); color: var(--text); border-color: var(--border-strong); }
+.btn-naver:hover { background: #02b350; }
+.btn-kakao:hover { background: #f2da00; }
+.btn-google:hover { background: var(--surface-2); }
+
+@media (max-width: 768px) {
+    .wrapper { flex-direction: column; max-width: 420px; }
+    .brand-section { padding: var(--sp-10) var(--sp-6) var(--sp-8); border-right: none; border-bottom: 1px solid var(--border); }
+    .logo-circle { width: 112px; height: 112px; }
+    .logo-text { font-size: var(--fs-30); }
+    .action-section { width: 100%; padding: var(--sp-8) var(--sp-6) var(--sp-10); }
+    .action-title { display: none; }
+}

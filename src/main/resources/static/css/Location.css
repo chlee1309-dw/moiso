@@ -1,0 +1,144 @@
+@charset "UTF-8";
+
+/* 장소 관리(관리자) */
+
+body { display: flex; flex-direction: column; }
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 var(--sp-4);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+.header .back-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-full);
+    color: var(--text);
+    font-size: var(--fs-18);
+    text-decoration: none;
+    transition: background var(--dur-2) var(--ease);
+}
+.header .back-btn:hover { background: var(--surface-2); }
+.header-logo-group { display: flex; align-items: center; gap: var(--sp-2); color: var(--text); text-decoration: none; }
+.header-logo-group img { width: 30px; height: 30px; border-radius: var(--r-full); object-fit: cover; }
+.header-logo-group span { font-size: var(--fs-18); font-weight: 800; }
+
+.container {
+    width: 100%;
+    max-width: 720px;
+    margin-inline: auto;
+    padding: var(--sp-6) var(--sp-5) var(--sp-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+}
+.page-heading { font-size: var(--fs-24); font-weight: 800; letter-spacing: -0.02em; }
+.section-label { margin-top: var(--sp-2); font-size: var(--fs-15); font-weight: 800; }
+
+/* ---- 등록 폼 ---------------------------------------- */
+.loc-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-6);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+}
+.loc-form .row { display: flex; gap: var(--sp-3); }
+.loc-form .row > * { flex: 1; }
+.loc-form input[type="text"],
+.loc-form textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text);
+    font-size: var(--fs-14);
+    transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.loc-form textarea { min-height: 72px; resize: vertical; line-height: var(--lh-snug); }
+.loc-form input:focus,
+.loc-form textarea:focus { outline: none; border-color: var(--brand); box-shadow: var(--ring); }
+.loc-form .check { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-14); font-weight: 600; color: var(--text-muted); }
+.loc-form .check input { width: 18px; height: 18px; accent-color: var(--brand); }
+.loc-form button {
+    align-self: flex-start;
+    min-height: 44px;
+    padding: 0 var(--sp-6);
+    border: 0;
+    border-radius: var(--r-md);
+    background: var(--brand);
+    color: var(--text-on-brand);
+    font-size: var(--fs-14);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease);
+}
+.loc-form button:hover { background: var(--brand-strong); }
+
+/* ---- 장소 리스트 ---------------------------------- */
+.loc-list { display: flex; flex-direction: column; gap: var(--sp-2); }
+.loc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-1);
+}
+.loc-item .name { font-size: var(--fs-15); font-weight: 700; }
+.loc-item .sub { margin-top: 2px; font-size: var(--fs-12); color: var(--text-subtle); }
+.loc-item .tag {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: var(--r-full);
+    font-size: var(--fs-11);
+    font-weight: 800;
+}
+.loc-item .tag.on { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.loc-item .tag.off { background: var(--surface-2); color: var(--text-subtle); }
+.loc-item button {
+    flex-shrink: 0;
+    min-height: 36px;
+    padding: 0 var(--sp-3);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.loc-item button:hover { border-color: var(--danger); color: var(--danger); }
+.loc-item .right { display: flex; align-items: center; gap: var(--sp-2); }
+
+.empty {
+    padding: var(--sp-8) var(--sp-5);
+    text-align: center;
+    color: var(--text-subtle);
+    font-size: var(--fs-14);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+}
+
+@media (max-width: 600px) {
+    .loc-form .row { flex-direction: column; }
+}

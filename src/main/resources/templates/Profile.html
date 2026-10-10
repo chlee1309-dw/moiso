@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 프로필</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/Profile.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<!-- 0. 상단 헤더 -->
+<header class="top-header">
+    <div class="header-left" onclick="goBack()" title="뒤로가기">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+    <a th:href="@{/main}" class="header-logo">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소 로고" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+</header>
+
+<!-- 1. 사이드바 -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header" onclick="toggleSidebar()">
+        <i class="fa-solid fa-xmark"></i>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a th:href="@{/main}" class="menu-item"><div class="menu-item-left"><i class="fa-solid fa-house"></i><span>메인</span></div></a></li>
+        <li><a th:href="@{/questions}" class="menu-item"><div class="menu-item-left"><i class="fa-regular fa-circle-question"></i><span>질문 게시판</span></div></a></li>
+        <li><a th:href="@{/appointments}" class="menu-item"><div class="menu-item-left"><i class="fa-regular fa-calendar-check"></i><span>내 예약</span></div></a></li>
+        <li><a th:href="@{/chat}" class="menu-item"><div class="menu-item-left"><i class="fa-regular fa-comment"></i><span>채팅목록</span></div></a></li>
+        <li><a th:href="@{/locations}" class="menu-item"><div class="menu-item-left"><i class="fa-solid fa-location-dot"></i><span>장소 관리</span></div></a></li>
+        <li>
+            <div class="menu-item" onclick="toggleCategory()">
+                <div class="menu-item-left"><i class="fa-solid fa-ellipsis-vertical"></i><span>카테고리</span></div>
+                <i class="fa-solid fa-chevron-down arrow-icon" id="categoryArrow"></i>
+            </div>
+            <ul class="submenu" id="categorySubmenu">
+                <li><a th:href="@{/questions(category='FREE')}">자유게시판</a></li>
+                <li><a th:href="@{/questions(category='STUDY')}">스터디 모임</a></li>
+                <li><a th:href="@{/questions(category='MARKET')}">중고 장터</a></li>
+            </ul>
+        </li>
+    </ul>
+</aside>
+
+<div class="app-container">
+    <div class="main-content">
+
+        <div class="page-title">
+            <div class="page-title-icon"><i class="fa-regular fa-user"></i></div>
+            <span>마이페이지</span>
+        </div>
+
+        <div th:if="${message}" class="flash flash--info" th:text="${message}" style="margin-bottom:16px;"></div>
+        <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}" style="margin-bottom:16px;"></div>
+
+        <!-- 프로필 카드 (당근마켓 스타일: 아바타 + 이름 + 매너온도) -->
+        <div class="mypage-card mypage-profile">
+            <div class="profile-img mypage-avatar">
+                <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="프로필 이미지" onerror="this.style.display='none'">
+            </div>
+            <div class="mypage-name" th:text="${user.name}">홍길동</div>
+            <div class="mypage-sub" th:text="${user.university} + ' · ' + ${user.department}">대구대학교 · 컴퓨터공학과</div>
+
+            <div class="mypage-temp">
+                <div class="temp-bar-wrapper">
+                    <div class="temp-emoji"
+                         th:text="${temperature >= 60} ? '😍' : (${temperature >= 40} ? '😊' : (${temperature >= 20} ? '😐' : '🥶'))">😇</div>
+                    <div class="temp-bar-bg"><div class="temp-bar-fill" th:style="'width:' + ${temperature} + '%'"></div></div>
+                    <div class="temp-text" th:text="${#numbers.formatDecimal(temperature, 1, 1)} + '°C'">36.5°C</div>
+                </div>
+                <span class="temp-caption">멘토 활동으로 받은 리뷰 기준 온도예요</span>
+            </div>
+        </div>
+
+        <!-- 활동 -->
+        <div class="section-title">활동</div>
+        <div class="mypage-list">
+            <a th:href="@{/questions}" class="mypage-list-item">
+                <i class="fa-regular fa-circle-question"></i><span>질문 게시판</span><i class="fa-solid fa-chevron-right chev"></i>
+            </a>
+            <a th:href="@{/appointments}" class="mypage-list-item">
+                <i class="fa-regular fa-calendar-check"></i><span>내 예약</span><i class="fa-solid fa-chevron-right chev"></i>
+            </a>
+            <a th:href="@{/chat}" class="mypage-list-item">
+                <i class="fa-regular fa-comment"></i><span>채팅목록</span><i class="fa-solid fa-chevron-right chev"></i>
+            </a>
+            <a th:href="@{/locations}" class="mypage-list-item">
+                <i class="fa-solid fa-location-dot"></i><span>장소 관리</span><i class="fa-solid fa-chevron-right chev"></i>
+            </a>
+        </div>
+
+        <!-- 설정 -->
+        <div class="section-title">설정</div>
+        <div class="mypage-list">
+            <button type="button" class="mypage-list-item" onclick="toggleProfileEdit()">
+                <i class="fa-regular fa-pen-to-square"></i><span>프로필 수정</span>
+                <i class="fa-solid fa-chevron-down arrow-icon chev" id="profileEditArrow"></i>
+            </button>
+
+            <!-- 프로필 수정 폼 (기본 숨김) -->
+            <form class="edit-form mypage-edit-form" id="profileEditForm" hidden th:action="@{/profile}" method="post">
+                <label>학교
+                    <input type="text" name="university" th:value="${user.university}" maxlength="255" required>
+                </label>
+                <label>학과
+                    <input type="text" name="department" th:value="${user.department}" maxlength="255" required>
+                </label>
+                <label>가입목적
+                    <select name="purpose" required>
+                        <option value="COUNSEL" th:selected="${user.purpose != null and user.purpose.name() == 'COUNSEL'}">고민상담 목적</option>
+                        <option value="SCHOOL"  th:selected="${user.purpose != null and user.purpose.name() == 'SCHOOL'}">학교생활 목적</option>
+                        <option value="CAREER"  th:selected="${user.purpose != null and user.purpose.name() == 'CAREER'}">취업/학업 목적</option>
+                    </select>
+                </label>
+                <button type="submit" class="btn-user-action primary">프로필 저장</button>
+            </form>
+
+            <a th:href="@{/profile/password}" class="mypage-list-item">
+                <i class="fa-solid fa-lock"></i><span>비밀번호 변경</span><i class="fa-solid fa-chevron-right chev"></i>
+            </a>
+        </div>
+
+        <!-- 로그아웃 -->
+        <div class="mypage-list">
+            <form th:action="@{/logout}" method="post" onsubmit="return confirm('로그아웃 할까요?');">
+                <button type="submit" class="mypage-list-item mypage-list-item--danger">
+                    <i class="fa-solid fa-right-from-bracket"></i><span>로그아웃</span>
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script th:src="@{/js/Profile.js}"></script>
+</body>
+</html>

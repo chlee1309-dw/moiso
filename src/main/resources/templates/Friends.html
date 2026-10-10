@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>친구 목록</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Friend.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<header class="header">
+    <a th:href="@{/main}" class="back-btn" title="메인으로"><i class="fa-solid fa-arrow-left"></i></a>
+    <a th:href="@{/main}" class="header-logo-group">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+    <span style="width:40px;"></span>
+</header>
+
+<main class="container">
+    <h1 class="page-heading">친구</h1>
+
+    <div th:if="${message}" class="flash flash--info" th:text="${message}"></div>
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"></div>
+
+    <!-- 받은 친구 요청 -->
+    <div class="section-label" th:if="${!#lists.isEmpty(requests)}">받은 친구 요청</div>
+    <div class="friend-list" th:if="${!#lists.isEmpty(requests)}">
+        <div class="friend-card" th:each="r : ${requests}">
+            <a class="friend-name" th:href="@{/users/{id}(id=${r.requesterIdx})}" th:text="${r.requesterName}">이름</a>
+            <div class="friend-actions">
+                <form th:action="@{/friends/{id}/accept(id=${r.friendIdx})}" method="post">
+                    <button type="submit" class="accept">수락</button>
+                </form>
+                <form th:action="@{/friends/{id}/reject(id=${r.friendIdx})}" method="post">
+                    <button type="submit" class="danger">거절</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 내 친구 목록 -->
+    <div class="section-label" style="margin-top: 28px;">내 친구</div>
+    <p class="empty" th:if="${#lists.isEmpty(friends)}">아직 친구가 없어요. 질문/답변에서 상대방 이름을 눌러 친구를 추가해보세요.</p>
+    <div class="friend-list" th:unless="${#lists.isEmpty(friends)}">
+        <div class="friend-card" th:each="f : ${friends}">
+            <a class="friend-name" th:href="@{/users/{id}(id=${f.counterpartIdx})}" th:text="${f.counterpartName}">이름</a>
+            <span class="friend-meta" th:text="${f.university} + ' · ' + ${f.department}">학교 · 학과</span>
+            <div class="friend-actions">
+                <form th:action="@{/chats/start}" method="post">
+                    <input type="hidden" name="counterpartIdx" th:value="${f.counterpartIdx}">
+                    <button type="submit">채팅</button>
+                </form>
+                <form th:action="@{/friends/{id}/remove(id=${f.friendIdx})}" method="post"
+                      onsubmit="return confirm('이 친구를 삭제할까요?');">
+                    <button type="submit" class="danger">삭제</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이디 / 비밀번호 찾기</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Id_Find.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+
+<div class="find-container">
+
+    <!-- 좌측 상단 뒤로가기 버튼 (메인으로 이동) -->
+    <a th:href="@{/}" class="top-back-btn" title="메인으로 돌아가기">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
+
+    <img th:src="@{/images/cow.png}" src="/images/cow.png" class="logo-img" alt="모이소 캐릭터" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+
+    <h1 class="title">아이디 / 비밀번호 찾기</h1>
+
+    <p class="sub-text">찾으려는 항목을 선택해 주세요.</p>
+
+    <div th:if="${message}" class="flash flash--info" th:text="${message}"></div>
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"></div>
+    <div th:if="${foundEmail}" class="flash flash--info">
+        가입하신 이메일: <strong th:text="${foundEmail}"></strong>
+    </div>
+
+    <button class="choice-btn" onclick="showId()">아이디(이메일) 찾기</button>
+    <button class="choice-btn" onclick="showPw()">비밀번호 찾기</button>
+
+    <!-- 동적 입력창 영역 -->
+    <div id="find-area">
+        <form id="findEmailForm" th:action="@{/id-find/email}" method="post" hidden>
+            <input class="input-box" type="text" name="name" placeholder="이름" autocomplete="off" required>
+            <input class="input-box" type="text" name="university" placeholder="학교" autocomplete="off" required>
+            <input class="input-box" type="text" name="department" placeholder="학과" autocomplete="off" required>
+            <button type="submit" class="submit-btn">아이디(이메일) 찾기</button>
+        </form>
+
+        <form id="findPwForm" th:action="@{/id-find/password}" method="post" hidden>
+            <input class="input-box" type="email" name="email" placeholder="가입한 이메일 입력" autocomplete="off" required>
+            <button type="submit" class="submit-btn">재설정 메일 받기</button>
+        </form>
+    </div>
+
+    <a th:href="@{/login}" class="back">로그인 화면으로 돌아가기</a>
+
+</div>
+
+<script th:src="@{/js/Id_Find.js}"></script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+@charset "UTF-8";
+
+/* 캘린더 */
+
+body { display: flex; flex-direction: column; }
+
+/* ---- 헤더 ------------------------------------------------- */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 var(--sp-5);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+.header-back { display: flex; align-items: center; }
+
+/* 페이지 타이틀은 시각적으로는 숨기고 접근성용으로만 남김 (가운데 "모이소" 로고와 자리 겹침 방지) */
+.header__title {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.back-btn,
+.icon-btn,
+.icon-link {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-full);
+    color: var(--text-muted);
+    font-size: var(--fs-18);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.back-btn:hover,
+.icon-btn:hover,
+.icon-link:hover { background: var(--surface-2); color: var(--brand-ink); }
+
+.header-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    color: var(--text);
+    font-size: var(--fs-18);
+    font-weight: 800;
+    text-decoration: none;
+}
+.header-logo:hover { text-decoration: none; }
+.logo-cow { width: 30px; height: 30px; border-radius: var(--r-full); object-fit: cover; }
+
+.header-icons { display: flex; align-items: center; gap: var(--sp-1); }
+.notif-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 7px;
+    height: 7px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+}
+
+/* ---- 알림 드롭다운 ------------------------------------- */
+.notif-dropdown {
+    position: absolute;
+    top: calc(100% + var(--sp-2));
+    right: 0;
+    width: 320px;
+    max-width: calc(100vw - var(--sp-8));
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    z-index: var(--z-popover);
+}
+.notif-dropdown.show { display: flex; animation: notif-pop var(--dur-2) var(--ease-out); }
+@keyframes notif-pop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+.notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-4);
+    border-bottom: 1px solid var(--border);
+    font-size: var(--fs-15);
+    font-weight: 700;
+}
+.notif-header .mark-read { font-size: var(--fs-12); font-weight: 500; color: var(--brand-ink); cursor: pointer; }
+
+.notif-list { max-height: 320px; overflow-y: auto; }
+.notif-item {
+    display: flex;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--border);
+    color: inherit;
+    text-decoration: none;
+    transition: background var(--dur-2) var(--ease);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: var(--surface-2); text-decoration: none; }
+.notif-item.unread { background: var(--brand-wash); }
+.notif-empty { padding: var(--sp-5) var(--sp-4); text-align: center; color: var(--text-subtle); font-size: var(--fs-13); }
+
+.notif-icon {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-full);
+    background: var(--brand-wash-2);
+    color: var(--brand-ink);
+    font-size: var(--fs-14);
+}
+.notif-content { flex: 1; min-width: 0; }
+.notif-text { margin-bottom: var(--sp-1); font-size: var(--fs-13); line-height: var(--lh-snug); }
+.notif-time { font-size: var(--fs-11); color: var(--text-subtle); }
+
+.notif-footer {
+    padding: var(--sp-3);
+    text-align: center;
+    background: var(--surface-2);
+    border-top: 1px solid var(--border);
+}
+.notif-footer a { font-size: var(--fs-12); font-weight: 600; color: var(--text-muted); text-decoration: none; }
+.notif-footer a:hover { color: var(--brand-ink); }
+
+/* ---- 본문 컨테이너 ---------------------------------------- */
+.container {
+    width: 100%;
+    max-width: 480px;
+    margin-inline: auto;
+    padding: var(--sp-6) var(--sp-5) var(--sp-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+}
+
+/* ---- 달력 카드 ---------------------------------------- */
+.cal-card {
+    padding: var(--sp-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+}
+
+/* prev버튼 · 타이틀 · next버튼이 1행, 요일/날짜 그리드는 아래로 전체 폭 차지 */
+.cal-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    row-gap: var(--sp-4);
+}
+.cal-title { text-align: center; font-size: var(--fs-18); font-weight: 800; letter-spacing: -0.02em; }
+.cal-nav {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-full);
+    color: var(--text-muted);
+    font-size: var(--fs-14);
+    transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.cal-nav:hover { background: var(--surface-2); color: var(--brand-ink); }
+
+.cal-weekdays {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-size: var(--fs-12);
+    font-weight: 700;
+    color: var(--text-subtle);
+    text-align: center;
+}
+.cal-weekdays .sun { color: var(--danger); }
+.cal-weekdays .sat { color: var(--brand-ink); }
+
+.cal-grid {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.cal-day {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    aspect-ratio: 1;
+    border-radius: var(--r-sm);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    color: var(--text);
+    transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.cal-day:hover { background: var(--surface-2); }
+.cal-day.is-outside { color: var(--text-subtle); opacity: 0.5; }
+.cal-day.is-sun { color: var(--danger); }
+.cal-day.is-sat { color: var(--brand-ink); }
+
+.cal-day.is-today {
+    box-shadow: inset 0 0 0 2px var(--brand);
+    font-weight: 800;
+}
+.cal-day.is-selected {
+    background: var(--brand);
+    color: var(--text-on-brand);
+    font-weight: 800;
+}
+.cal-day.is-selected:hover { background: var(--brand-strong); }
+
+.cal-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+}
+.cal-day.is-selected .cal-dot { background: var(--text-on-brand); }
+
+/* ---- 선택한 날짜 일정 ---------------------------------------- */
+.cal-events-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-3);
+}
+.btn--sm { min-height: 34px; padding: 0 var(--sp-3); font-size: var(--fs-13); }
+
+.add-event-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-4);
+    padding: var(--sp-4);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+}
+.add-event-form input[type="time"] { flex: 0 0 120px; }
+.add-event-form input[type="text"] { flex: 1 1 160px; }
+
+.cal-event-delete { margin-left: auto; }
+.cal-event-delete .icon-btn {
+    width: 28px;
+    height: 28px;
+    font-size: var(--fs-14);
+    color: var(--text-subtle);
+}
+.cal-event-delete .icon-btn:hover { background: var(--danger-wash); color: var(--danger); }
+
+.cal-events .empty {
+    padding: var(--sp-6) var(--sp-5);
+    text-align: center;
+    color: var(--text-subtle);
+    font-size: var(--fs-14);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+}
+.cal-event-list { display: flex; flex-direction: column; gap: var(--sp-3); }
+.cal-event-item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-1);
+}
+.cal-event-time {
+    flex-shrink: 0;
+    font-size: var(--fs-13);
+    font-weight: 800;
+    color: var(--brand-ink);
+}
+.cal-event-title { font-size: var(--fs-14); font-weight: 700; }
+
+/* ---- 캘린더 연동 카드 ---------------------------------------- */
+.sync-card {
+    padding: var(--sp-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+}
+.sync-header { display: flex; align-items: flex-start; gap: var(--sp-3); }
+.sync-header i {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-md);
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    font-size: var(--fs-18);
+}
+.sync-title { font-size: var(--fs-16); font-weight: 800; }
+.sync-desc { margin-top: 4px; font-size: var(--fs-13); color: var(--text-muted); line-height: var(--lh-snug); }
+
+.sync-actions { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.sync-actions .btn { flex: 1; min-width: 140px; }
+.sync-copied { font-size: var(--fs-13); font-weight: 700; color: var(--ok); }
+
+@media (max-width: 400px) {
+    .cal-card, .sync-card { padding: var(--sp-4); }
+}

@@ -1,0 +1,307 @@
+@charset "UTF-8";
+
+/* 내 프로필 (layout.css 다음에 로드) */
+
+body { display: flex; flex-direction: column; }
+
+/* ---- 상단 헤더 ---------------------------------------- */
+.top-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 var(--sp-5);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+.header-left {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-full);
+    color: var(--text);
+    font-size: var(--fs-20);
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease);
+}
+.header-left:hover { background: var(--surface-2); }
+
+.header-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    color: var(--text);
+    text-decoration: none;
+}
+.header-logo img { height: 32px; width: auto; object-fit: contain; }
+.header-logo span { font-size: var(--fs-18); font-weight: 800; }
+
+/* ---- 본문 -------------------------------------------- */
+.app-container { display: flex; flex: 1; }
+.main-content {
+    width: 100%;
+    max-width: 900px;
+    margin-inline: auto;
+    padding: var(--sp-10) var(--sp-5) var(--sp-12);
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-8);
+    font-size: var(--fs-24);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+.page-title-icon {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-md);
+    background: var(--brand-wash);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+.page-title-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin: var(--sp-10) 0 var(--sp-4);
+    font-size: var(--fs-16);
+    font-weight: 800;
+}
+.section-title::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 18px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+}
+
+/* ---- 프로필 카드 ------------------------------------- */
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+    flex-wrap: wrap;
+    padding: var(--sp-8);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+}
+.profile-img {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 88px;
+    height: 88px;
+    border-radius: var(--r-full);
+    background: var(--brand-wash);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+.profile-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.profile-info { display: flex; flex-direction: column; gap: var(--sp-2); font-size: var(--fs-14); font-weight: 700; }
+.profile-info > div { display: flex; align-items: center; gap: var(--sp-1); }
+.profile-info .value { margin-left: var(--sp-1); font-weight: 500; color: var(--text-muted); }
+
+/* 고민 온도계 */
+.temperature-area {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    width: 232px;
+    padding: var(--sp-5);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+}
+.temp-text { font-size: var(--fs-20); font-weight: 800; color: var(--brand-ink); }
+.temp-bar-wrapper { display: flex; align-items: center; gap: var(--sp-3); }
+.temp-bar-bg { flex: 1; height: 10px; border-radius: var(--r-full); background: var(--border); overflow: hidden; }
+.temp-bar-fill {
+    height: 100%;
+    width: 42.5%;
+    border-radius: var(--r-full);
+    background: linear-gradient(90deg, #ff9800 0%, var(--brand) 100%);
+    transition: width 1s var(--ease-out);
+}
+.temp-emoji { font-size: var(--fs-24); line-height: 1; }
+
+/* 상호작용 버튼 (User_Profile 과 공유하는 클래스) */
+.action-buttons { display: flex; gap: var(--sp-3); margin-top: var(--sp-5); }
+.btn-user-action {
+    flex: 1;
+    min-height: 48px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text);
+    font-size: var(--fs-15);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease);
+}
+.btn-user-action:hover { background: var(--surface-2); }
+.btn-user-action.primary { border-color: transparent; background: var(--brand); color: var(--text-on-brand); box-shadow: var(--shadow-brand); }
+.btn-user-action.primary:hover { background: var(--brand-strong); }
+
+/* 게시글 리스트 */
+.user-post-list { list-style: none; display: flex; flex-direction: column; gap: var(--sp-3); }
+.user-post-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-1);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.user-post-item:hover { border-color: var(--border-strong); box-shadow: var(--shadow-2); text-decoration: none; }
+.user-post-item .post-title { margin-bottom: var(--sp-1); font-size: var(--fs-15); font-weight: 700; }
+.user-post-item .post-date { font-size: var(--fs-12); color: var(--text-subtle); }
+.post-likes {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: var(--sp-2) var(--sp-4);
+    border-radius: var(--r-full);
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    font-size: var(--fs-13);
+    font-weight: 700;
+}
+
+/* ---- 바로가기 ---------------------------------------- */
+.quick-links { display: flex; gap: var(--sp-3); margin-top: var(--sp-4); flex-wrap: wrap; }
+.quick-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text);
+    font-size: var(--fs-14);
+    font-weight: 700;
+    text-decoration: none;
+    transition: border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.quick-link:hover { border-color: var(--brand); color: var(--brand-ink); text-decoration: none; }
+
+/* ---- 수정 폼 ---------------------------------------- */
+.edit-form { display: flex; flex-direction: column; gap: var(--sp-4); }
+.edit-form label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    font-size: var(--fs-13);
+    font-weight: 700;
+    color: var(--text-muted);
+}
+.edit-form input,
+.edit-form select {
+    width: 100%;
+    min-height: 46px;
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text);
+    font-size: var(--fs-15);
+    font-weight: 400;
+    transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.edit-form input:focus,
+.edit-form select:focus { outline: none; border-color: var(--brand); box-shadow: var(--ring); }
+.edit-form select { cursor: pointer; }
+.edit-form .btn-user-action { margin-top: var(--sp-1); }
+
+.main-content--narrow { max-width: 560px; }
+
+/* ---- 마이페이지 (당근마켓 스타일) ---------------------- */
+.mypage-card {
+    padding: var(--sp-8);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+}
+.mypage-profile { display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); text-align: center; }
+.mypage-avatar { width: 96px; height: 96px; }
+.mypage-name { margin-top: var(--sp-2); font-size: var(--fs-20); font-weight: 800; }
+.mypage-sub { font-size: var(--fs-14); color: var(--text-subtle); font-weight: 600; }
+
+.mypage-temp { width: 100%; margin-top: var(--sp-5); padding-top: var(--sp-5); border-top: 1px solid var(--border); }
+.mypage-temp .temp-bar-wrapper { display: flex; align-items: center; gap: var(--sp-3); }
+.mypage-temp .temp-emoji { font-size: var(--fs-24); line-height: 1; }
+.mypage-temp .temp-text { flex-shrink: 0; font-size: var(--fs-16); font-weight: 800; color: var(--brand-ink); }
+.temp-caption { display: block; margin-top: var(--sp-2); font-size: var(--fs-12); color: var(--text-subtle); }
+
+.mypage-list {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+}
+.mypage-list-item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    width: 100%;
+    min-height: 56px;
+    padding: 0 var(--sp-5);
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: var(--fs-15);
+    font-weight: 700;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease);
+}
+.mypage-list-item:last-child { border-bottom: 0; }
+.mypage-list-item:hover { background: var(--surface-2); text-decoration: none; }
+.mypage-list-item i:first-child { width: 20px; text-align: center; color: var(--text-muted); }
+.mypage-list-item .chev { margin-left: auto; font-size: var(--fs-12); color: var(--text-subtle); }
+.mypage-list-item--danger { color: var(--danger); }
+.mypage-list-item--danger i:first-child { color: var(--danger); }
+
+.mypage-edit-form { padding: var(--sp-5); border-bottom: 1px solid var(--border); }
+.mypage-edit-form:last-child { border-bottom: 0; }
+.mypage-edit-form[hidden] { display: none; }
+
+@media (max-width: 640px) {
+    .main-content { padding: var(--sp-6) var(--sp-4) var(--sp-10); }
+    .profile-container { flex-direction: column; align-items: flex-start; }
+    .temperature-area { width: 100%; margin-left: 0; }
+    .action-buttons { flex-direction: column; }
+}

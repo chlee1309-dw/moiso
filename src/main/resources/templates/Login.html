@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모이소 로그인</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Login.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<div class="login-card">
+
+    <!-- 좌측 상단 뒤로가기 버튼 (메인으로 이동) -->
+    <a th:href="@{/}" class="top-back-btn" title="메인으로 돌아가기">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
+
+    <div class="logo-area">
+        <div class="avatar-wrapper">
+            <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="소 캐릭터" class="logo-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+        </div>
+        <h1 class="logo-text">모이소</h1>
+        <p class="logo-subtext">
+            우리 학교 선배와 함께하는 멘토 · 멘티 매칭
+        </p>
+    </div>
+
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"></div>
+    <div th:if="${message}" class="flash flash--info" th:text="${message}"></div>
+
+    <form th:action="@{/login}" method="post">
+        <input
+                type="email"
+                name="email"
+                class="input-field"
+                placeholder="이메일"
+                required>
+
+        <input
+                type="password"
+                name="password"
+                class="input-field"
+                placeholder="비밀번호"
+                required>
+
+        <button type="submit" class="btn-login">
+            모이소 로그인
+        </button>
+    </form>
+
+    <div class="utility">
+        <label>
+            <input type="checkbox">
+            로그인 유지
+        </label>
+        <a th:href="@{/id-find}">아이디/비밀번호 찾기</a>
+    </div>
+
+    <hr>
+
+    <div class="signup">
+        아직 계정이 없으신가요?
+        <a th:href="@{/signup}">회원가입</a>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅방</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Chat_Room.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+
+<!-- 상단 헤더 -->
+<header class="chat-header">
+    <div class="header-left">
+        <a th:href="@{/chat}" class="back-btn" title="뒤로 가기">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="header-center">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소" class="header-logo" onerror="this.style.display='none'">
+        <span class="header-title" th:text="${counterpart.name}">모이소</span>
+    </div>
+
+    <div class="header-right">
+        <div class="header-icon-btn" id="themeToggle" onclick="toggleTheme()" title="화면 테마 변경">
+            <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </div>
+        <div class="header-icon-btn" onclick="toggleSidebar()" title="메뉴 열기">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </div>
+</header>
+
+<!-- 사이드바 Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- 사이드바 -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <i class="fa-solid fa-xmark close-sidebar-btn" onclick="toggleSidebar()"></i>
+    </div>
+
+    <div class="sidebar-menu">
+        <div class="menu-item">
+            <a href="https://www.daegu.ac.kr" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:14px; width:100%;">
+                <i class="fa-solid fa-house menu-icon"></i>
+                <span>학교 홈페이지</span>
+            </a>
+        </div>
+
+        <div class="menu-item">
+            <a href="https://www.daegu.ac.kr/article/DG159/list" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:14px; width:100%;">
+                <i class="fa-solid fa-calendar-days menu-icon"></i>
+                <span>학사일정</span>
+            </a>
+        </div>
+
+        <div class="menu-item">
+            <a th:href="@{/friends}" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:14px; width:100%;">
+                <i class="fa-regular fa-user menu-icon"></i>
+                <span>친구목록</span>
+            </a>
+        </div>
+
+        <div class="menu-item">
+            <a th:href="@{/chat}" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:14px; width:100%;">
+                <i class="fa-regular fa-comment menu-icon"></i>
+                <span>채팅목록</span>
+            </a>
+        </div>
+
+        <!-- 카테고리 (기본 접힘) -->
+        <div class="menu-item" onclick="toggleCategory()">
+            <i class="fa-solid fa-ellipsis-vertical menu-icon"></i>
+            <span>카테고리</span>
+            <i class="fa-solid fa-chevron-down arrow-icon" id="categoryArrow"></i>
+        </div>
+
+        <div class="sub-menu-box" id="categorySubMenu">
+            <a th:href="@{/questions(category='FREE')}" class="sub-item">
+                <span>자유게시판</span>
+            </a>
+
+            <!-- 고민상담소 (기본 접힘) -->
+            <div class="sub-item" onclick="toggleSubCategory('counselingMenu', 'counselingArrow', event)">
+                <span>고민상담소</span>
+                <i class="fa-solid fa-chevron-down arrow-icon" id="counselingArrow"></i>
+            </div>
+            <div class="nested-menu-box" id="counselingMenu">
+                <a th:href="@{/questions(category='WORRY_CAREER')}" class="nested-item">진로 / 취업</a>
+                <a th:href="@{/questions(category='WORRY_STUDY')}" class="nested-item">학업 / 성적</a>
+                <a th:href="@{/questions(category='WORRY_RELATION')}" class="nested-item">연애 / 인간관계</a>
+            </div>
+
+            <!-- 멘토링 게시판 (기본 접힘) -->
+            <div class="sub-item" onclick="toggleSubCategory('mentoringMenu', 'mentoringArrow', event)">
+                <span>멘토링 게시판</span>
+                <i class="fa-solid fa-chevron-down arrow-icon" id="mentoringArrow"></i>
+            </div>
+            <div class="nested-menu-box" id="mentoringMenu">
+                <a th:href="@{/questions(category='MENTOR_FIND')}" class="nested-item">멘토 찾기</a>
+                <a th:href="@{/questions(category='MENTOR_REVIEW')}" class="nested-item">멘토링 후기</a>
+            </div>
+
+            <a th:href="@{/questions(category='STUDY')}" class="sub-item">
+                <span>스터디 모임</span>
+            </a>
+
+            <a th:href="@{/questions(category='MARKET')}" class="sub-item">
+                <span>중고 장터</span>
+            </a>
+        </div>
+    </div>
+</aside>
+
+<!-- 대화 영역 -->
+<main class="chat-container" id="chatContainer"
+      th:attr="data-room-idx=${roomIdx},data-login-user-idx=${loginUserIdx},data-counterpart-idx=${counterpart.idx}">
+
+    <p class="empty" id="chatEmpty" th:if="${#lists.isEmpty(messages)}" style="text-align:center; padding: 24px 0; color: var(--text-subtle);">
+        아직 메시지가 없어요. 첫 메시지를 보내보세요!
+    </p>
+
+    <div th:each="m : ${messages}"
+         th:class="${m.senderIdx == loginUserIdx} ? 'msg-row me' : 'msg-row other'"
+         th:attr="data-msg-id=${m.idx}">
+        <img th:if="${m.senderIdx != loginUserIdx}" th:src="@{/images/cow.png}" src="/images/cow.png"
+             alt="프로필" class="msg-profile-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+        <div th:if="${m.senderIdx != loginUserIdx}" class="msg-content-wrap">
+            <span class="msg-sender-name" th:text="${m.senderName}">상대방</span>
+            <div class="msg-bubble-group">
+                <div class="msg-bubble" th:text="${m.content}">내용</div>
+                <span class="msg-time" th:text="${#temporals.format(m.createdAt, 'a h:mm')}">시간</span>
+            </div>
+        </div>
+        <div th:if="${m.senderIdx == loginUserIdx}" class="msg-bubble-group">
+            <div class="msg-bubble" th:text="${m.content}">내용</div>
+            <span class="msg-time" th:text="${#temporals.format(m.createdAt, 'a h:mm')}">시간</span>
+        </div>
+    </div>
+</main>
+
+<!-- 메시지 입력 영역 -->
+<footer class="chat-input-area">
+    <div class="chat-input-wrapper">
+        <div class="plus-btn" id="plusBtn" onclick="toggleAttachmentMenu()" title="기능 메뉴">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+
+        <!-- 플러스 버튼 확장 메뉴 -->
+        <div class="attachment-menu" id="attachmentMenu">
+            <div class="attach-item" onclick="openReservationModal()">
+                <div class="attach-icon reserve"><i class="fa-solid fa-calendar-check"></i></div>
+                <span>예약하기</span>
+            </div>
+            <div class="attach-item" onclick="triggerFileInput('image')">
+                <div class="attach-icon photo"><i class="fa-solid fa-image"></i></div>
+                <span>사진</span>
+            </div>
+            <div class="attach-item" onclick="triggerFileInput('video')">
+                <div class="attach-icon video"><i class="fa-solid fa-video"></i></div>
+                <span>동영상</span>
+            </div>
+            <div class="attach-item" onclick="triggerFileInput('file')">
+                <div class="attach-icon file"><i class="fa-solid fa-file-lines"></i></div>
+                <span>파일</span>
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
+
+        <input type="text" id="messageInput" class="chat-input" placeholder="메시지를 입력하세요..." onkeypress="handleKeyPress(event)">
+
+        <button class="send-btn" onclick="sendMessage()" title="전송">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </div>
+</footer>
+
+<!-- 예약하기 모달 -->
+<div class="modal-overlay" id="reservationModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span class="modal-title"><i class="fa-solid fa-calendar-days" style="color:#ff5722;"></i> 멘토링 약속 잡기</span>
+            <i class="fa-solid fa-xmark modal-close-btn" onclick="closeReservationModal()"></i>
+        </div>
+
+        <!-- 날짜 및 시간 선택 -->
+        <div class="form-group">
+            <label class="form-label" for="reserveDateTime">약속 일시 선택</label>
+            <input type="datetime-local" id="reserveDateTime" class="form-input">
+        </div>
+
+        <!-- 멘토 회원 번호 (현재 채팅 상대로 자동 입력) -->
+        <div class="form-group">
+            <label class="form-label" for="mentorIdxInput">멘토</label>
+            <input type="number" id="mentorIdxInput" class="form-input" min="1"
+                   th:value="${counterpart.idx}" readonly>
+        </div>
+
+        <!-- 약속 장소 (입력하면 아래 지도에 후보 추천, 지도에서 클릭하면 여기 삽입) -->
+        <div class="form-group">
+            <label class="form-label" for="locationQuery">약속 장소</label>
+            <input type="text" id="locationQuery" class="form-input" placeholder="장소를 검색하세요 (예: 중앙도서관)" autocomplete="off">
+            <input type="hidden" id="locationIdxInput">
+            <p class="location-picked" id="locationPicked" hidden>
+                <i class="fa-solid fa-location-dot"></i> <span id="locationPickedText"></span>
+            </p>
+        </div>
+
+        <!-- 장소 지도 -->
+        <div class="form-group">
+            <label class="form-label">지도에서 선택</label>
+            <div class="map-search">
+                <input type="text" id="mapKeyword" placeholder="지도에서 장소 검색">
+                <button type="button" id="mapSearchBtn">검색</button>
+            </div>
+            <div class="map-preview-box" id="mapPreview">
+                <div id="chatApptMap" class="map-preview-frame"></div>
+            </div>
+        </div>
+
+        <button class="submit-reservation-btn" onclick="sendReservationMessage()">약속 제안하기</button>
+    </div>
+</div>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=377b2cfffb4143e9fea6d31ded53c968&libraries=services"></script>
+<script th:src="@{/js/Chat_Room.js}"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+@charset "UTF-8";
+
+/* 알림 목록 */
+
+body { display: flex; flex-direction: column; }
+
+/* ---- 헤더 ------------------------------------------------- */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 var(--sp-4);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+.header-left { display: flex; align-items: center; gap: var(--sp-2); }
+.back-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-full);
+    color: var(--text);
+    font-size: var(--fs-18);
+    text-decoration: none;
+    transition: background var(--dur-2) var(--ease);
+}
+.back-btn:hover { background: var(--surface-2); }
+.header-title { font-size: var(--fs-18); font-weight: 800; }
+
+.header-right { display: flex; align-items: center; }
+.mark-all-btn {
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--r-sm);
+    color: var(--brand-ink);
+    font-size: var(--fs-13);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease);
+}
+.mark-all-btn:hover { background: var(--brand-wash); }
+
+/* ---- 본문 -------------------------------------------- */
+.container {
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
+    padding: var(--sp-5) var(--sp-4) var(--sp-10);
+    flex: 1;
+}
+
+.notif-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+}
+
+.notif-card {
+    position: relative;
+    display: block;
+    border-bottom: 1px solid var(--border);
+    color: inherit;
+    transition: background var(--dur-2) var(--ease);
+}
+.notif-card:last-child { border-bottom: none; }
+.notif-card:hover { background: var(--surface-2); }
+.notif-card.unread { background: var(--brand-wash); }
+.notif-card.unread::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--brand);
+}
+
+.notif-card-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    width: 100%;
+    padding: var(--sp-4);
+    color: inherit;
+    cursor: pointer;
+}
+
+.notif-icon-box {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-md);
+    background: var(--brand-wash-2);
+    color: var(--brand-ink);
+    font-size: var(--fs-16);
+}
+
+.notif-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
+.notif-text { font-size: var(--fs-14); line-height: var(--lh-snug); word-break: keep-all; }
+.notif-text strong { font-weight: 700; }
+.notif-time { font-size: var(--fs-12); color: var(--text-subtle); }
+
+.notif-arrow { align-self: center; margin-left: var(--sp-2); color: var(--text-subtle); font-size: var(--fs-12); }
+
+.empty-notif {
+    display: none;
+    padding: var(--sp-12) var(--sp-5);
+    text-align: center;
+    color: var(--text-subtle);
+    font-size: var(--fs-14);
+}
+.empty-notif i { display: block; margin-bottom: var(--sp-3); font-size: var(--fs-30); color: var(--border-strong); }

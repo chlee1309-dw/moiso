@@ -1,0 +1,58 @@
+spring:
+  # 로컬 전용 비밀값(.env.properties, git 추적 제외)을 불러온다. 파일이 없어도(optional:) 무시하고
+  # 넘어가므로 CI/다른 PC에서는 그냥 OS 환경변수(DB_PASSWORD 등)만 써도 된다.
+  config:
+    import: optional:file:.env.properties
+
+  application:
+    name: bootcampproject
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/bootcampproject?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=UTF-8}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 30MB
+
+  # 비밀번호 재설정 메일 발송용. 네이버 메일 사용 - 환경변수(MAIL_USERNAME/MAIL_PASSWORD)로 채울 것.
+  # MAIL_PASSWORD는 네이버 로그인 비밀번호가 아니라 네이버 메일 앱 비밀번호를 써야 함.
+  # 값이 비어있으면 발송 시점에 인증 실패로 예외가 나고, PasswordResetService가 이를 잡아 사용자에게 안내한다.
+  mail:
+    host: ${MAIL_HOST:smtp.naver.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+app:
+  # 메일 헤더 From 주소 - 네이버는 SMTP 인증 아이디(username)가 이메일 전체 형식이 아닐 수 있어 별도 변수로 분리
+  mail-from: ${MAIL_FROM:noreply@moiso.local}
+
+  # 질문 첨부 이미지 저장 위치 (프로젝트 루트 기준 상대경로)
+  upload-dir: uploads
+
+  # 로컬 수동 테스트용 더미 데이터 시딩 (DevDataSeeder). users 테이블이 비어있을 때만 1회 동작.
+  # 배포 환경에서는 기본값 false로 꺼지고, 로컬에서는 .env.properties의 APP_SEED_ENABLED=true로 켠다.
+  seed:
+    enabled: ${APP_SEED_ENABLED:false}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유저 프로필</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/User_Profile.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+
+<!-- 0. 상단 헤더 -->
+<header class="top-header">
+    <div class="header-left" onclick="goBack()" title="뒤로가기">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+    <a th:href="@{/main}" class="header-logo">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="로고" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+</header>
+
+<!-- 1. 슬라이드 사이드바 & 오버레이 -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header" onclick="toggleSidebar()">
+        <i class="fa-solid fa-xmark"></i>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="https://www.daegu.ac.kr" target="_blank" rel="noopener noreferrer" class="menu-item">
+                <div class="menu-item-left">
+                    <i class="fa-solid fa-house"></i>
+                    <span>학교 홈페이지</span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.daegu.ac.kr/article/DG159/list" target="_blank" rel="noopener noreferrer" class="menu-item">
+                <div class="menu-item-left">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>학사일정</span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/friends}" class="menu-item">
+                <div class="menu-item-left">
+                    <i class="fa-regular fa-user"></i>
+                    <span>친구목록</span>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/chat}" class="menu-item">
+                <div class="menu-item-left">
+                    <i class="fa-regular fa-comments"></i>
+                    <span>채팅목록</span>
+                </div>
+            </a>
+        </li>
+
+        <!-- 접히는 카테고리 아코디언 메뉴 -->
+        <li>
+            <div class="menu-item" onclick="toggleCategory()">
+                <div class="menu-item-left">
+                    <i class="fa-solid fa-shapes"></i>
+                    <span>카테고리</span>
+                </div>
+                <i class="fa-solid fa-chevron-down arrow-icon" id="categoryArrow"></i>
+            </div>
+
+            <ul class="submenu" id="categorySubmenu">
+                <li><a th:href="@{/questions(category='FREE')}">자유게시판</a></li>
+                <li class="has-sub">
+                    <div class="sub-menu-item" onclick="toggleSubCategory(event, 'worrySub')">
+                        <span>고민상담소</span>
+                        <i class="fa-solid fa-chevron-down sub-arrow-icon" id="worrySubArrow"></i>
+                    </div>
+                    <ul class="sub-submenu" id="worrySub">
+                        <li><a th:href="@{/questions(category='WORRY_CAREER')}">진로 / 취업</a></li>
+                        <li><a th:href="@{/questions(category='WORRY_STUDY')}">학업 / 성적</a></li>
+                        <li><a th:href="@{/questions(category='WORRY_RELATION')}">연애 / 인간관계</a></li>
+                    </ul>
+                </li>
+                <li class="has-sub">
+                    <div class="sub-menu-item" onclick="toggleSubCategory(event, 'mentorSub')">
+                        <span>멘토링 게시판</span>
+                        <i class="fa-solid fa-chevron-down sub-arrow-icon" id="mentorSubArrow"></i>
+                    </div>
+                    <ul class="sub-submenu" id="mentorSub">
+                        <li><a th:href="@{/questions(category='MENTOR_FIND')}">멘토 찾기</a></li>
+                        <li><a th:href="@{/questions(category='MENTOR_REVIEW')}">멘토링 후기</a></li>
+                    </ul>
+                </li>
+                <li><a th:href="@{/questions(category='STUDY')}">스터디 모임</a></li>
+                <li><a th:href="@{/questions(category='MARKET')}">중고 장터</a></li>
+            </ul>
+        </li>
+    </ul>
+</aside>
+
+<!-- 2. 우측 메인 콘텐츠 영역 -->
+<div class="main-content">
+
+    <!-- 타이틀 -->
+    <div class="page-title">
+        <div class="page-title-icon">
+        </div>
+        <span>프로필 정보</span>
+    </div>
+
+    <!-- 프로필 섹션 -->
+    <div class="section-title">회원 프로필</div>
+    <div class="profile-container">
+        <div class="profile-img">
+            <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="프로필 이미지" onerror="this.style.display='none'">
+        </div>
+
+        <div class="profile-info">
+            <div>이름 :<span class="value" th:text="${profile.name}">이름</span></div>
+            <div>학교 :<span class="value" th:text="${profile.university}">학교</span></div>
+            <div>학과 :<span class="value" th:text="${profile.department}">학과</span></div>
+            <div>작성게시글 :<span class="value" th:text="${profile.questionCount} + '개'">0개</span></div>
+            <div>작성답변 :<span class="value" th:text="${profile.answerCount} + '개'">0개</span></div>
+            <div th:if="${!#lists.isEmpty(reviews)}">
+                받은 리뷰 평점 :<span class="value">
+                    <i class="fa-solid fa-star" style="color:#ffb400;"></i>
+                    <span th:text="${#numbers.formatDecimal(avgRating, 1, 1)}">0.0</span>
+                    (<span th:text="${#lists.size(reviews)}">0</span>건)
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상호작용 버튼 영역 -->
+    <div class="action-buttons" th:unless="${isSelf}">
+        <form th:action="@{/chats/start}" method="post">
+            <input type="hidden" name="counterpartIdx" th:value="${profile.idx}">
+            <button type="submit" class="btn-user-action primary">1:1 채팅하기</button>
+        </form>
+        <button class="btn-user-action"
+                th:onclick="|location.href='@{/appointments/new(mentorIdx=${profile.idx})}'|">멘토링 예약</button>
+
+        <form th:if="${friendRelation.name() == 'NONE'}" th:action="@{/friends/request}" method="post">
+            <input type="hidden" name="counterpartIdx" th:value="${profile.idx}">
+            <button type="submit" class="btn-user-action">친구 추가</button>
+        </form>
+        <form th:if="${friendRelation.name() == 'REQUESTED_BY_THEM'}" th:action="@{/friends/request}" method="post">
+            <input type="hidden" name="counterpartIdx" th:value="${profile.idx}">
+            <button type="submit" class="btn-user-action primary">친구 요청 수락</button>
+        </form>
+        <button th:if="${friendRelation.name() == 'REQUESTED_BY_ME'}" class="btn-user-action" disabled>요청 보냄</button>
+        <button th:if="${friendRelation.name() == 'FRIENDS'}" class="btn-user-action" disabled>
+            <i class="fa-solid fa-user-check"></i> 친구
+        </button>
+    </div>
+    <p class="empty" th:if="${isSelf}" style="padding: 16px 0;">내 프로필이에요.</p>
+
+    <hr class="section-divider">
+
+    <!-- 받은 리뷰 -->
+    <div class="section-title" th:if="${!#lists.isEmpty(reviews)}">받은 리뷰</div>
+    <div class="review-list" th:if="${!#lists.isEmpty(reviews)}">
+        <div class="review-item" th:each="r : ${reviews}">
+            <div class="review-top">
+                <span class="review-rating"><i class="fa-solid fa-star"></i> <span th:text="${r.rating}">5.0</span></span>
+                <span class="review-name" th:text="${r.menteeName}">멘티</span>
+                <span class="review-date" th:text="${#temporals.format(r.createdAt, 'yyyy-MM-dd')}">날짜</span>
+            </div>
+            <p class="review-content" th:if="${r.content != null and !#strings.isEmpty(r.content)}" th:text="${r.content}">리뷰 내용</p>
+        </div>
+    </div>
+
+</div>
+<script th:src="@{/js/User_Profile.js}"></script>
+</body>
+</html>

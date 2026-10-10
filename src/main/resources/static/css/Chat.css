@@ -1,0 +1,214 @@
+@charset "UTF-8";
+
+/* 채팅 목록 */
+
+body { display: flex; flex-direction: column; }
+
+/* ---- 헤더 ------------------------------------------------- */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 var(--sp-5);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+.header-back { display: flex; align-items: center; }
+
+.back-btn,
+.icon-btn,
+.icon-link {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-full);
+    color: var(--text-muted);
+    font-size: var(--fs-18);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.back-btn:hover,
+.icon-btn:hover,
+.icon-link:hover { background: var(--surface-2); color: var(--brand-ink); }
+
+.header-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    color: var(--text);
+    font-size: var(--fs-18);
+    font-weight: 800;
+    text-decoration: none;
+}
+.logo-cow { width: 30px; height: 30px; border-radius: var(--r-full); object-fit: cover; }
+
+.header-icons { display: flex; align-items: center; gap: var(--sp-1); }
+.notif-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 7px;
+    height: 7px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+}
+
+/* ---- 알림 드롭다운 ------------------------------------- */
+.notif-dropdown {
+    position: absolute;
+    top: calc(100% + var(--sp-2));
+    right: 0;
+    width: 320px;
+    max-width: calc(100vw - var(--sp-8));
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-3);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    z-index: var(--z-popover);
+}
+.notif-dropdown.show { display: flex; animation: notif-pop var(--dur-2) var(--ease-out); }
+@keyframes notif-pop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+.notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-4);
+    border-bottom: 1px solid var(--border);
+    font-size: var(--fs-15);
+    font-weight: 700;
+}
+.notif-header .mark-read { font-size: var(--fs-12); font-weight: 500; color: var(--brand-ink); cursor: pointer; }
+
+.notif-list { max-height: 320px; overflow-y: auto; }
+.notif-item {
+    display: flex;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--border);
+    color: inherit;
+    text-decoration: none;
+    transition: background var(--dur-2) var(--ease);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: var(--surface-2); text-decoration: none; }
+.notif-item.unread { background: var(--brand-wash); }
+.notif-empty { padding: var(--sp-5) var(--sp-4); text-align: center; color: var(--text-subtle); font-size: var(--fs-13); }
+
+.notif-icon {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-full);
+    background: var(--brand-wash-2);
+    color: var(--brand-ink);
+    font-size: var(--fs-14);
+}
+.notif-content { flex: 1; min-width: 0; }
+.notif-text { margin-bottom: var(--sp-1); font-size: var(--fs-13); line-height: var(--lh-snug); }
+.notif-time { font-size: var(--fs-11); color: var(--text-subtle); }
+
+.notif-footer {
+    padding: var(--sp-3);
+    text-align: center;
+    background: var(--surface-2);
+    border-top: 1px solid var(--border);
+}
+.notif-footer a { font-size: var(--fs-12); font-weight: 600; color: var(--text-muted); text-decoration: none; }
+.notif-footer a:hover { color: var(--brand-ink); }
+
+/* ---- 채팅 목록 --------------------------------------- */
+.container {
+    width: 100%;
+    max-width: 720px;
+    margin-inline: auto;
+    padding: var(--sp-6) var(--sp-4) var(--sp-10);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-1) var(--sp-1) 0;
+    font-size: var(--fs-20);
+    font-weight: 800;
+}
+
+.chat-card {
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4) var(--sp-3);
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--r-md);
+    color: var(--text);
+    text-decoration: none;
+    transition: background var(--dur-2) var(--ease);
+}
+.chat-item:last-child { border-bottom: none; }
+.chat-item:hover { background: var(--surface-2); text-decoration: none; }
+
+.profile-thumb {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--r-md);
+    background: var(--brand-wash);
+    overflow: hidden;
+}
+.profile-thumb img { width: 76%; height: 76%; object-fit: contain; }
+
+.chat-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
+.chat-user-name { font-size: var(--fs-15); font-weight: 700; }
+.chat-last-msg {
+    font-size: var(--fs-13);
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-meta { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-1); margin-left: var(--sp-3); }
+.chat-time { font-size: var(--fs-12); color: var(--text-subtle); }
+.unread-badge {
+    min-width: 18px;
+    padding: 1px 6px;
+    border-radius: var(--r-full);
+    background: var(--brand);
+    color: var(--text-on-brand);
+    font-size: var(--fs-11);
+    font-weight: 700;
+    text-align: center;
+}
+
+@media (max-width: 576px) {
+    .container { padding: var(--sp-4) var(--sp-3) var(--sp-10); }
+}

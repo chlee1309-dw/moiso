@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장소 관리</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Location.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<header class="header">
+    <a th:href="@{/main}" class="back-btn" title="메인으로"><i class="fa-solid fa-arrow-left"></i></a>
+    <a th:href="@{/main}" class="header-logo-group">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+    <span style="width:40px"></span>
+</header>
+
+<main class="container">
+    <h1 class="page-heading">장소 관리</h1>
+    <p style="font-size:13px;color:var(--text-subtle)">예약 신청 시 선택 가능한 장소 목록이에요. (관리자용)</p>
+
+    <div th:if="${message}" class="flash flash--info" th:text="${message}"></div>
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"></div>
+
+    <div class="section-label">새 장소 등록</div>
+    <form class="loc-form" th:action="@{/locations}" method="post">
+        <div class="row">
+            <input type="text" name="name" placeholder="장소명 (예: 본관 1층 로비)" maxlength="50" required>
+            <input type="text" name="category" placeholder="카테고리 (예: 교내, 카페)" maxlength="255" required>
+        </div>
+        <textarea name="description" placeholder="설명 (선택)"></textarea>
+        <label class="check">
+            <input type="checkbox" name="available" value="true" checked>
+            예약에 노출 (사용 가능)
+        </label>
+        <button type="submit">장소 등록</button>
+    </form>
+
+    <div class="section-label" style="margin-top:20px;">등록된 장소</div>
+    <p class="empty" th:if="${#lists.isEmpty(locations)}">등록된 장소가 없어요.</p>
+    <div class="loc-list" th:unless="${#lists.isEmpty(locations)}">
+        <div class="loc-item" th:each="loc : ${locations}">
+            <div>
+                <div class="name" th:text="${loc.name}">장소명</div>
+                <div class="sub">
+                    <span th:text="${loc.category}">카테고리</span>
+                    <span th:if="${loc.description != null and !loc.description.isBlank()}"
+                          th:text="' · ' + ${loc.description}"></span>
+                </div>
+            </div>
+            <div class="right">
+                <span class="tag" th:classappend="${loc.available} ? 'on' : 'off'"
+                      th:text="${loc.available} ? '노출' : '숨김'">노출</span>
+                <form th:action="@{/locations/{id}/delete(id=${loc.idx})}" method="post"
+                      onsubmit="return confirm('이 장소를 삭제할까요?');">
+                    <button type="submit">삭제</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${category != null} ? ${category.label} : '질문 게시판'">질문 게시판</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Question.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<header class="header">
+    <a th:href="@{/main}" class="back-btn" title="메인으로"><i class="fa-solid fa-arrow-left"></i></a>
+    <a th:href="@{/main}" class="header-logo-group">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+    <a th:href="@{/write}" class="write-link"><i class="fa-solid fa-pen"></i> 질문하기</a>
+</header>
+
+<main class="container">
+    <h1 class="page-heading" th:text="${category != null} ? ${category.label} : '질문 게시판'">질문 게시판</h1>
+
+    <!-- 카테고리 탭 -->
+    <nav class="category-tabs">
+        <a th:href="@{/questions}" th:classappend="${category == null} ? 'active'" class="tab">전체</a>
+        <a th:each="c : ${categories}"
+           th:href="@{/questions(category=${c})}"
+           th:classappend="${category == c} ? 'active'"
+           th:text="${c.label}"
+           class="tab">카테고리</a>
+    </nav>
+
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"></div>
+    <div th:if="${message}" class="flash flash--info" th:text="${message}"></div>
+
+    <form class="search-bar" th:action="@{/questions}" method="get">
+        <input type="hidden" name="category" th:if="${category != null}" th:value="${category}">
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="제목으로 검색">
+        <button type="submit">검색</button>
+    </form>
+
+    <p class="empty" th:if="${questions == null or questions.isEmpty()}">
+        아직 등록된 질문이 없어요. 첫 질문을 남겨보세요!
+    </p>
+
+    <div class="q-list" th:unless="${questions == null or questions.isEmpty()}">
+        <a class="q-item" th:each="q : ${questions.content}" th:href="@{/questions/{id}(id=${q.idx})}">
+            <img class="q-thumb" th:if="${q.thumbnailUrl != null}" th:src="@{${q.thumbnailUrl}}" alt="">
+            <div class="q-item-body">
+                <span class="q-cat" th:if="${q.category != null}" th:text="${q.category.label}">카테고리</span>
+                <div class="q-title" th:text="${q.title}">질문 제목</div>
+                <div class="q-meta">
+                    <span th:text="${q.writerName}">작성자</span>
+                    <span th:text="${#temporals.format(q.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+                    <span class="ans">답변 <span th:text="${q.answerCount}">0</span></span>
+                    <span class="likes"><i class="fa-solid fa-heart"></i> <span th:text="${q.likeCount}">0</span></span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <nav class="pager" th:if="${questions != null and questions.totalPages > 1}">
+        <a th:if="${!questions.first}" th:href="@{/questions(keyword=${keyword}, category=${category}, page=${questions.number - 1})}">이전</a>
+        <span th:if="${questions.first}" class="disabled">이전</span>
+
+        <span th:each="i : ${#numbers.sequence(0, questions.totalPages - 1)}"
+              th:switch="${i == questions.number}">
+            <span th:case="true" class="current" th:text="${i + 1}">1</span>
+            <a th:case="*" th:href="@{/questions(keyword=${keyword}, category=${category}, page=${i})}" th:text="${i + 1}">1</a>
+        </span>
+
+        <a th:if="${!questions.last}" th:href="@{/questions(keyword=${keyword}, category=${category}, page=${questions.number + 1})}">다음</a>
+        <span th:if="${questions.last}" class="disabled">다음</span>
+    </nav>
+</main>
+</body>
+</html>

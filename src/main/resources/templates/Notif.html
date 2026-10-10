@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알림</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Notif.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<!-- 상단 헤더 -->
+<header class="header">
+    <div class="header-left">
+        <a th:href="@{/main}" class="back-btn" title="뒤로가기">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="header-title">알림</h1>
+    </div>
+    <div class="header-right">
+        <form th:action="@{/notifications/read-all}" method="post">
+            <button type="submit" class="mark-all-btn">모두 읽음</button>
+        </form>
+    </div>
+</header>
+
+<!-- 메인 컨테이너 -->
+<main class="container">
+
+    <div class="notif-group" id="notifList" th:if="${not #lists.isEmpty(notifications)}">
+        <form th:each="n : ${notifications}" th:action="@{/notifications/{id}/open(id=${n.idx})}" method="post"
+              th:classappend="${!n.read} ? ' unread' : ''" class="notif-card">
+            <button type="submit" class="notif-card-btn">
+                <div class="notif-icon-box">
+                    <i th:class="${n.type.icon}"></i>
+                </div>
+                <div class="notif-body">
+                    <div class="notif-text" th:text="${n.content}">알림 내용</div>
+                    <div class="notif-time" th:text="${#temporals.format(n.createdAt, 'MM-dd HH:mm')}">시간</div>
+                </div>
+                <div class="notif-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+            </button>
+        </form>
+    </div>
+
+    <div class="empty-notif" id="emptyNotif" th:style="${#lists.isEmpty(notifications)} ? 'display:block' : ''">
+        <i class="fa-regular fa-bell-slash"></i>
+        새로운 알림이 없습니다.
+    </div>
+
+</main>
+</body>
+</html>

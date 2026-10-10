@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${question != null ? question.title : '질문'}">질문 상세</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Question.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<header class="header">
+    <a th:href="@{/questions}" class="back-btn" title="목록으로"><i class="fa-solid fa-arrow-left"></i></a>
+    <a th:href="@{/main}" class="header-logo-group">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+    <a th:href="@{/write}" class="write-link"><i class="fa-solid fa-pen"></i> 질문하기</a>
+</header>
+
+<main class="container">
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"></div>
+    <div th:if="${message}" class="flash flash--info" th:text="${message}"></div>
+
+    <article class="q-card">
+        <span class="q-cat" th:if="${question.category != null}"
+              th:text="${question.category.label}">카테고리</span>
+        <h1 th:text="${question.title}">질문 제목</h1>
+        <div class="writer">
+            <a th:href="@{/users/{id}(id=${question.writerIdx})}" th:text="${question.writerName}">작성자</a> ·
+            <span th:text="${#temporals.format(question.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</span>
+        </div>
+        <div class="body" th:text="${question.content}">질문 본문</div>
+
+        <div class="q-images" th:if="${!#lists.isEmpty(question.imageUrls)}">
+            <a th:each="url : ${question.imageUrls}" th:href="@{${url}}" target="_blank">
+                <img th:src="@{${url}}" alt="첨부 사진">
+            </a>
+        </div>
+
+        <div class="like-bar">
+            <form th:action="@{/questions/{id}/like(id=${question.idx})}" method="post">
+                <button type="submit" class="like-btn"
+                        th:classappend="${question.likedByMe} ? ' liked' : ''">
+                    <i class="fa-solid fa-heart" th:if="${question.likedByMe}"></i>
+                    <i class="fa-regular fa-heart" th:unless="${question.likedByMe}"></i>
+                    <span th:text="${question.likeCount}">0</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="owner-actions" th:if="${loginUserIdx != null and loginUserIdx == question.writerIdx}">
+            <a th:href="@{/questions/{id}/edit(id=${question.idx})}">수정</a>
+            <form th:action="@{/questions/{id}/delete(id=${question.idx})}" method="post"
+                  onsubmit="return confirm('이 질문을 삭제할까요?');">
+                <button type="submit" class="danger">삭제</button>
+            </form>
+        </div>
+    </article>
+
+    <section class="answers-card">
+        <h2>답변 <span th:text="${question.answerCount}">0</span></h2>
+
+        <p class="empty" th:if="${question.answerCount == 0}" style="padding: 24px 0;">
+            아직 답변이 없어요. 첫 답변을 남겨보세요.
+        </p>
+
+        <!-- 최상위 답변을 반복하고, 각 답변은 대댓글(들)을 깊이 제한 없이 재귀적으로 포함한다 -->
+        <div class="answer-thread" th:each="a : ${question.answers}">
+            <div th:replace="~{fragments/answer-node :: answerNode(${a}, ${question.idx}, false, ${loginUserIdx}, ${question.writerIdx})}"></div>
+        </div>
+
+        <form class="answer-form" th:action="@{/questions/{id}/answers(id=${question.idx})}" method="post">
+            <textarea name="content" placeholder="답변을 남겨주세요" required></textarea>
+            <button type="submit">등록</button>
+        </form>
+    </section>
+</main>
+
+<script>
+    function toggleForm(btn) {
+        var form = document.getElementById(btn.dataset.target);
+        if (!form) return;
+        var willOpen = form.hidden;
+
+        // 공간을 아끼기 위해 답글/수정 작성란은 한 번에 하나만 열어둔다.
+        document.querySelectorAll('.toggle-form').forEach(function (f) {
+            if (f !== form) f.hidden = true;
+        });
+
+        form.hidden = !willOpen;
+        if (willOpen) {
+            var input = form.querySelector('textarea');
+            if (input) input.focus();
+        }
+    }
+</script>
+</body>
+</html>

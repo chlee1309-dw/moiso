@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅 목록</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Chat.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<!-- 헤더 영역 -->
+<header class="header">
+    <!-- 좌측 뒤로가기 버튼 (메인 이동) -->
+    <div class="header-back">
+        <a th:href="@{/main}" class="back-btn" title="뒤로가기">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <!-- 중앙 로고 -->
+    <a th:href="@{/main}" class="header-logo">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" class="logo-cow" alt="모이소 로고" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+
+    <!-- 우측 아이콘 및 알림 팝업 -->
+    <div class="header-icons">
+        <button type="button" class="icon-btn" id="notifBtn" title="알림">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notif-badge" th:if="${unreadNotifCount > 0}"></span>
+        </button>
+        <a th:href="@{/profile}" class="icon-link" title="마이페이지">
+            <i class="fa-regular fa-user"></i>
+        </a>
+
+        <!-- 알림 드롭다운 팝업 창 -->
+        <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">
+                <span>알림</span>
+                <form th:action="@{/notifications/read-all}" method="post">
+                    <button type="submit" class="mark-read">모두 읽음</button>
+                </form>
+            </div>
+            <div class="notif-list">
+                <a th:each="n : ${recentNotifications}" th:href="@{${n.link}}" class="notif-item"
+                   th:classappend="${!n.read} ? ' unread' : ''">
+                    <div class="notif-icon"><i th:class="${n.type.icon}"></i></div>
+                    <div class="notif-content">
+                        <div class="notif-text" th:text="${n.content}">알림 내용</div>
+                        <div class="notif-time" th:text="${#temporals.format(n.createdAt, 'MM-dd HH:mm')}">시간</div>
+                    </div>
+                </a>
+                <p th:if="${#lists.isEmpty(recentNotifications)}" class="notif-empty">새 알림이 없어요.</p>
+            </div>
+            <div class="notif-footer">
+                <a th:href="@{/notif}">전체 알림 보기</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 컨테이너 -->
+<main class="container">
+
+    <div class="page-title">
+        <i class="fa-regular fa-comments"></i>
+        <span>채팅</span>
+    </div>
+
+    <!-- 카드 스타일로 감싼 채팅 목록 -->
+    <div class="chat-card">
+
+        <p class="empty" th:if="${#lists.isEmpty(rooms)}" style="padding: 32px 0; text-align: center;">
+            아직 채팅이 없어요. 질문/답변에서 상대방 이름을 눌러 채팅을 시작해보세요.
+        </p>
+
+        <a th:each="room : ${rooms}" th:href="@{/chats/{id}(id=${room.roomIdx})}" class="chat-item">
+            <div class="profile-thumb">
+                <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="프로필" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+            </div>
+            <div class="chat-main">
+                <div class="chat-user-name" th:text="${room.counterpartName}">상대방</div>
+                <div class="chat-last-msg" th:text="${room.lastMessage}">마지막 메시지</div>
+            </div>
+            <div class="chat-meta">
+                <div class="chat-time" th:text="${#temporals.format(room.lastMessageAt, 'MM-dd HH:mm')}">시간</div>
+            </div>
+        </a>
+
+    </div>
+
+</main>
+<script th:src="@{/js/Chat.js}"></script>
+</body>
+</html>

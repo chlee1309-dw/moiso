@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 예약</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Appointment.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="_csrf" th:content="${csrfToken}">
+    <script th:src="@{/js/csrf.js}"></script>
+</head>
+<body>
+<header class="header">
+    <a th:href="@{/main}" class="back-btn" title="메인으로"><i class="fa-solid fa-arrow-left"></i></a>
+    <a th:href="@{/main}" class="header-logo-group">
+        <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소" onerror="this.style.display='none'">
+        <span>모이소</span>
+    </a>
+    <a th:href="@{/appointments/new}" class="new-link"><i class="fa-solid fa-plus"></i> 예약 신청</a>
+</header>
+
+<main class="container">
+    <h1 class="page-heading">내 예약</h1>
+
+    <div th:if="${message}" class="flash flash--info" th:text="${message}"></div>
+    <div th:if="${errorMessage}" class="flash flash--error" th:text="${errorMessage}"></div>
+
+    <!-- 내가 멘티로 신청한 예약 -->
+    <div class="section-label">내가 신청한 예약</div>
+    <p class="empty" th:if="${#lists.isEmpty(asMentee)}">아직 신청한 예약이 없어요.</p>
+    <div class="appt-list" th:unless="${#lists.isEmpty(asMentee)}">
+        <div class="appt-card" th:each="a : ${asMentee}">
+            <div class="appt-top">
+                <span class="appt-when"
+                      th:text="${#temporals.format(a.date, 'yyyy-MM-dd')} + ' ' + ${#temporals.format(a.time, 'HH:mm')}">2026-09-15 14:00</span>
+                <span class="appt-status" th:classappend="${a.status.name()}" th:text="${a.status.label}">예약 요청</span>
+            </div>
+            <div class="appt-meta">
+                <span>멘토 : <b th:text="${a.mentorName}">멘토</b></span>
+                <span>장소 : <b th:text="${a.locationName}">장소</b></span>
+            </div>
+            <div class="appt-actions"
+                 th:if="${a.status.name() == 'REQUESTED' or a.status.name() == 'ACCEPTED'}">
+                <form th:action="@{/appointments/{id}/status(id=${a.idx})}" method="post"
+                      onsubmit="return confirm('이 예약을 취소할까요?');">
+                    <input type="hidden" name="status" value="CANCELLED">
+                    <button type="submit" class="danger">취소</button>
+                </form>
+            </div>
+
+            <!-- 완료된 예약: 리뷰 작성 -->
+            <div class="appt-actions" th:if="${a.status.name() == 'DONE' and !reviewed.get(a.idx)}">
+                <button type="button" class="review-toggle" th:attr="data-target=|review-form-${a.idx}|"
+                        onclick="toggleReviewForm(this)">리뷰 남기기</button>
+            </div>
+            <p class="empty" style="padding: 8px 0 0;" th:if="${a.status.name() == 'DONE' and reviewed.get(a.idx)}">
+                이미 리뷰를 남겼어요.
+            </p>
+            <form class="review-form" th:if="${a.status.name() == 'DONE'}" th:id="|review-form-${a.idx}|" hidden
+                  th:action="@{/reviews}" method="post">
+                <input type="hidden" name="mentorIdx" th:value="${a.mentorIdx}">
+                <input type="hidden" name="appointmentIdx" th:value="${a.idx}">
+                <label>
+                    별점
+                    <select name="rating" required>
+                        <option value="">선택</option>
+                        <option th:each="v : ${#numbers.sequence(10, 0, -1)}"
+                                th:value="${v / 2.0}" th:text="${v / 2.0} + '점'">5.0점</option>
+                    </select>
+                </label>
+                <textarea name="content" placeholder="멘토링은 어떠셨나요? (선택)" maxlength="1000"></textarea>
+                <button type="submit">리뷰 등록</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 내가 멘토로 받은 예약 -->
+    <div class="section-label" style="margin-top: 28px;">내가 받은 예약</div>
+    <p class="empty" th:if="${#lists.isEmpty(asMentor)}">받은 예약 요청이 없어요.</p>
+    <div class="appt-list" th:unless="${#lists.isEmpty(asMentor)}">
+        <div class="appt-card" th:each="a : ${asMentor}">
+            <div class="appt-top">
+                <span class="appt-when"
+                      th:text="${#temporals.format(a.date, 'yyyy-MM-dd')} + ' ' + ${#temporals.format(a.time, 'HH:mm')}">2026-09-15 14:00</span>
+                <span class="appt-status" th:classappend="${a.status.name()}" th:text="${a.status.label}">예약 요청</span>
+            </div>
+            <div class="appt-meta">
+                <span>멘티 : <b th:text="${a.menteeName}">멘티</b></span>
+                <span>장소 : <b th:text="${a.locationName}">장소</b></span>
+            </div>
+            <div class="appt-actions" th:if="${a.status.name() == 'REQUESTED' or a.status.name() == 'ACCEPTED'}">
+                <form th:if="${a.status.name() == 'REQUESTED'}"
+                      th:action="@{/appointments/{id}/status(id=${a.idx})}" method="post">
+                    <input type="hidden" name="status" value="ACCEPTED">
+                    <button type="submit" class="accept">수락</button>
+                </form>
+                <form th:if="${a.status.name() == 'REQUESTED'}"
+                      th:action="@{/appointments/{id}/status(id=${a.idx})}" method="post">
+                    <input type="hidden" name="status" value="REJECTED">
+                    <button type="submit" class="danger">거절</button>
+                </form>
+                <form th:if="${a.status.name() == 'ACCEPTED'}"
+                      th:action="@{/appointments/{id}/status(id=${a.idx})}" method="post">
+                    <input type="hidden" name="status" value="DONE">
+                    <button type="submit" class="accept">완료 처리</button>
+                </form>
+                <form th:action="@{/appointments/{id}/status(id=${a.idx})}" method="post"
+                      onsubmit="return confirm('이 예약을 취소할까요?');">
+                    <input type="hidden" name="status" value="CANCELLED">
+                    <button type="submit" class="danger">취소</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    function toggleReviewForm(btn) {
+        var form = document.getElementById(btn.dataset.target);
+        if (!form) return;
+        form.hidden = !form.hidden;
+    }
+</script>
+</body>
+</html>

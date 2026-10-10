@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모이소 index</title>
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/Index.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<div class="wrapper">
+
+    <!-- 좌측: 모이소 소개 비주얼 영역 -->
+    <div class="brand-section">
+        <div class="logo-circle">
+            <img th:src="@{/images/cow.png}" src="/images/cow.png" alt="모이소 로고" class="main-cow"
+                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+        </div>
+        <h1 class="logo-text">모이소</h1>
+        <h2 class="slogan-title">
+            다른 사람과 나누는 고민<br>
+            모이소와 함께
+        </h2>
+        <p class="slogan-sub">
+            우리 학교 선배와 함께하는<br>
+            멘토 · 멘티 매칭 서비스
+        </p>
+    </div>
+
+    <!-- 우측: 로그인 및 가입 영역 -->
+    <div class="action-section">
+        <h3 class="action-title">시작하기</h3>
+
+        <a th:href="@{/login}" class="btn login-btn">로그인</a>
+        <a th:href="@{/signup}" class="btn white-btn">회원가입</a>
+        <a th:href="@{/id-find}" class="btn white-btn">아이디 / 비밀번호 찾기</a>
+
+        <div class="sns-title">
+            <span>간편 로그인</span>
+        </div>
+
+        <!-- 소셜 로그인 링크 -->
+        <a href="https://nid.naver.com/nidlogin.login" class="btn btn-naver">
+            <i class="fa-solid fa-n" style="font-size: 13px;"></i> 네이버 로그인
+        </a>
+        <a href="https://accounts.kakao.com/login" class="btn btn-kakao">
+            <i class="fa-solid fa-comment" style="font-size: 13px;"></i> 카카오 로그인
+        </a>
+        <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=dummy&amp;response_type=token&amp;scope=email%20profile" class="btn btn-google">
+            <i class="fa-brands fa-google" style="font-size: 13px;"></i> 구글 로그인
+        </a>
+    </div>
+
+</div>
+</body>
+</html>

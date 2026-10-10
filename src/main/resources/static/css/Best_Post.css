@@ -1,0 +1,196 @@
+@charset "UTF-8";
+
+/* 게시글 상세(베스트 고민) */
+
+body { display: flex; flex-direction: column; }
+
+/* ---- 헤더 ------------------------------------------------- */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 var(--sp-4);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.back-btn,
+.header-action-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-full);
+    color: var(--text);
+    font-size: var(--fs-18);
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease);
+}
+.back-btn:hover,
+.header-action-btn:hover { background: var(--surface-2); }
+
+.header-logo-group { display: flex; align-items: center; gap: var(--sp-2); color: var(--text); text-decoration: none; }
+.header-logo-img { width: 30px; height: 30px; border-radius: var(--r-full); object-fit: cover; }
+.header-title { font-size: var(--fs-18); font-weight: 800; }
+
+/* ---- 본문 컨테이너 ------------------------------------- */
+.container {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+    padding: var(--sp-6) var(--sp-5) calc(72px + var(--sp-6));
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+}
+
+.post-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+    padding: var(--sp-8);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+}
+
+.category-badge {
+    align-self: flex-start;
+    padding: var(--sp-1) var(--sp-3);
+    border-radius: var(--r-sm);
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    font-size: var(--fs-13);
+    font-weight: 700;
+}
+
+.post-profile { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.profile-left { display: flex; align-items: center; gap: var(--sp-3); }
+.profile-img {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-full);
+    background: var(--surface-2);
+    color: var(--text-subtle);
+    font-size: var(--fs-18);
+}
+.profile-info .author-name { font-size: var(--fs-15); font-weight: 700; }
+.profile-info .post-date { margin-top: 2px; font-size: var(--fs-12); color: var(--text-subtle); }
+
+.user-profile-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--r-full);
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    font-size: var(--fs-13);
+    font-weight: 600;
+    text-decoration: none;
+}
+.user-profile-link:hover { background: var(--brand-wash-2); text-decoration: none; }
+
+.post-title { font-size: var(--fs-24); font-weight: 800; line-height: var(--lh-tight); }
+.post-content { font-size: var(--fs-16); line-height: var(--lh-normal); color: var(--text-muted); white-space: pre-line; }
+
+.post-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--border);
+}
+.stat-buttons { display: flex; gap: var(--sp-3); }
+.stat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-height: 40px;
+    padding: 0 var(--sp-4);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease), background var(--dur-2) var(--ease);
+}
+.stat-btn:hover { border-color: var(--brand); color: var(--brand-ink); }
+.stat-btn.active { background: var(--brand-wash); border-color: var(--brand); color: var(--brand-ink); }
+
+/* 댓글 카드 */
+.comments-card {
+    padding: var(--sp-6);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-1);
+}
+.comments-title { margin-bottom: var(--sp-4); font-size: var(--fs-16); font-weight: 800; }
+
+.comment-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    padding: var(--sp-3) 0;
+    border-bottom: 1px solid var(--border);
+}
+.comment-item:last-child { border-bottom: none; padding-bottom: 0; }
+.comment-header { display: flex; align-items: center; justify-content: space-between; }
+.comment-author { font-size: var(--fs-13); font-weight: 700; }
+.comment-date { font-size: var(--fs-11); color: var(--text-subtle); }
+.comment-body { font-size: var(--fs-14); line-height: var(--lh-snug); color: var(--text-muted); }
+
+/* 하단 고정 댓글 입력바 */
+.comment-input-bar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: var(--sp-3) var(--sp-5) max(var(--sp-3), env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: var(--z-header);
+}
+.comment-input-wrapper { display: flex; gap: var(--sp-2); width: 100%; max-width: 760px; margin-inline: auto; }
+.comment-input {
+    flex: 1;
+    min-height: 44px;
+    padding: var(--sp-2) var(--sp-4);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-full);
+    background: var(--surface-2);
+    font-size: var(--fs-14);
+    transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease), background var(--dur-2) var(--ease);
+}
+.comment-input:focus { outline: none; border-color: var(--brand); background: var(--surface); box-shadow: var(--ring); }
+.comment-send-btn {
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 0 var(--sp-5);
+    border: 0;
+    border-radius: var(--r-full);
+    background: var(--brand);
+    color: var(--text-on-brand);
+    font-size: var(--fs-14);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--dur-2) var(--ease);
+}
+.comment-send-btn:hover { background: var(--brand-strong); }
+
+@media (max-width: 600px) {
+    .post-card { padding: var(--sp-5); }
+    .post-title { font-size: var(--fs-20); }
+    .post-stats { flex-direction: column; align-items: flex-start; }
+}
